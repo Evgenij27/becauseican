@@ -2,7 +2,7 @@ package org.nashorn;
 
 import java.io.IOException;
 
-import javax.servlet.ReadListener;
+import javax.servlet.ReadListener; 
 import javax.servlet.ServletInputStream;
 
 public class RequestReadListener implements ReadListener {
@@ -12,28 +12,33 @@ public class RequestReadListener implements ReadListener {
     private byte[] buffer = new byte[BUFFER_SIZE];
 
     private final ServletInputStream input;
-    private final StringBuilder data;
+    private final StringBuilder destination;
 
-    public class RequestReadListener(ServletInputStream input, StringBuiler data) {
+    public RequestReadListener(ServletInputStream input, StringBuilder destination) {
         this.input = input;
-        this.data = data;
+        this.destination = destination;
     }
 
     @Override
-    public void onAllDataRead() {}
+    public void onAllDataRead() {
+        try {
+            input.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        
+    }
 
     @Override
     public void onDataAvailable() {
         try {
             do {
                 int length = input.read(buffer);
-                data.append(new String(buffer, 0, length))
+                destination.append(new String(buffer, 0, length));
             } while (input.isReady());
         } catch (IOException ex) {}
     }
 
     @Override
     public void onError(Throwable t) {}
-
-
 }

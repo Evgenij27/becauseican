@@ -1,6 +1,0 @@
-org/nashorn/server/HomeServlet.class
-org/nashorn/server/command/TestCommand.class
-org/nashorn/server/factory/ScriptTask.class
-org/nashorn/server/command/Command.class
-org/nashorn/server/CommandResolver.class
-org/nashorn/server/factory/TaskFactory.class

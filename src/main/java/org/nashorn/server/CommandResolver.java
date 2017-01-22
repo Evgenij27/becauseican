@@ -6,21 +6,16 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.regex.*;
-
 
 public class CommandResolver {
 
     private static final String TEMPLATE_VAR = "\\{(?<tvar>[a-z]*)\\}";
-    private static final String TEMPLATE_REPLACEMENT = "(?<%s>[^/]+?)";
-    private static final String END_TEMPLATE = "(/.*)?";
+    private static final String TEMPLATE_REPLACEMENT = "(?<%s>[^/]+)";
+    private static final String END_TEMPLATE = "(/)?";
 
     //private static final String ID_TEMPLATE = "(?<%s>.*)";
-
-
 
     private static final String GET = "GET";
     private static final String POST = "POST";
@@ -53,8 +48,9 @@ public class CommandResolver {
         int strLen = sb.length();
         if (sb.charAt(strLen - 1) == '/') {
             sb.deleteCharAt(strLen - 1);
-            sb.append(END_TEMPLATE);
+
         }
+        sb.append(END_TEMPLATE);
         System.out.println("transformed template -> " + sb.toString());
         return sb.toString();
     }
@@ -98,9 +94,13 @@ public class CommandResolver {
         Map<String, Command> comms = COMMANDS.get(methodName);
 
         for (Map.Entry<String, Command> entry : comms.entrySet()) {
-            pattern = Pattern.compile(entry.getKey());
+            String template = entry.getKey();
+            pattern = Pattern.compile(template);
             matcher = pattern.matcher(uri);
-            if (matcher.find()) {
+            if (matcher.matches()) {
+                for (String groupName : getPathVariables(template)) {
+                    request.setAttribute(groupName, matcher.group(groupName));
+                }
                 com = entry.getValue();
             }
         }
@@ -108,6 +108,19 @@ public class CommandResolver {
             throw new ServletException();
         }
         return com;
+    }
+
+    private List<String> getPathVariables(String template) {
+        String groupTemplate = "<\\w+>";
+        List<String> pathVariables = new ArrayList<>();
+        Pattern pattern = Pattern.compile(groupTemplate);
+        Matcher matcher = pattern.matcher(template);
+
+        while (matcher.find()) {
+            String groupName = matcher.group();
+            pathVariables.add(groupName.substring(1, groupName.length() - 1));
+        }
+        return pathVariables;
     }
 
 

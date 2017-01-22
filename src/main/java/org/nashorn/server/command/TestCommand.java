@@ -7,12 +7,16 @@ import java.io.IOException;
 
 public class TestCommand implements Command {
 
-    private final String path = "/nashorn/{id}";
+    private final String path = "/nashorn/{id}/{status}";
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException {
-        System.out.println("TEST COMMAND!!!!! /nashorn/{id}");
+
+        System.out.println("TEST COMMAND");
+        System.out.println("ID -> " + request.getAttribute("id"));
+        System.out.println("STATUS -> " + request.getAttribute("status"));
+
     }
 
     @Override

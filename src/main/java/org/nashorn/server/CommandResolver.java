@@ -14,11 +14,13 @@ import java.util.regex.*;
 
 public class CommandResolver {
 
-    private static final String TEMPLATE = "\\{([a-z]*)\\}";
-
-    private static final String ID_TEMPLATE = "(?<%s>.*)/*";
-    private static final String ALL_TEMPLATE = "([^/]+?)";
+    private static final String TEMPLATE_VAR = "\\{(?<tvar>[a-z]*)\\}";
+    private static final String TEMPLATE_REPLACEMENT = "(?<%s>[^/]+?)";
     private static final String END_TEMPLATE = "(/.*)?";
+
+    //private static final String ID_TEMPLATE = "(?<%s>.*)";
+
+
 
     private static final String GET = "GET";
     private static final String POST = "POST";
@@ -36,16 +38,23 @@ public class CommandResolver {
     }
 
     private static String transformTemplate2Path(String commandTemplate) {
-        Pattern pattern = Pattern.compile(TEMPLATE);
+        Pattern pattern = Pattern.compile(TEMPLATE_VAR);
         Matcher matcher = pattern.matcher(commandTemplate);
         StringBuffer sb = new StringBuffer();
-        int i = 0;
 
         while (matcher.find()) {
-            String templateName = matcher.group(++i);
-            matcher.appendReplacement(sb, String.format(ID_TEMPLATE, templateName));
+            String tvar = matcher.group("tvar");
+            matcher.appendReplacement(sb, String.format(TEMPLATE_REPLACEMENT, tvar));
         }
         matcher.appendTail(sb);
+
+        String modifiedString = sb.toString();
+
+        int strLen = sb.length();
+        if (sb.charAt(strLen - 1) == '/') {
+            sb.deleteCharAt(strLen - 1);
+            sb.append(END_TEMPLATE);
+        }
         System.out.println("transformed template -> " + sb.toString());
         return sb.toString();
     }
@@ -94,6 +103,9 @@ public class CommandResolver {
             if (matcher.find()) {
                 com = entry.getValue();
             }
+        }
+        if (com == null) {
+            throw new ServletException();
         }
         return com;
     }

@@ -7,11 +7,11 @@ import java.io.IOException;
 
 public class AnotherCommand implements Command {
 
-    private final String path = "nashorn/";
+    private final String path = "/nashorn/";
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        System.out.println("ANOTHER COMMAND");
+        System.out.println("ANOTHER COMMAND /nashorn/");
     }
 
     @Override

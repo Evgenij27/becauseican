@@ -12,7 +12,7 @@ public class TestCommand implements Command {
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException {
-        System.out.println("TEST COMMAND!!!!!");
+        System.out.println("TEST COMMAND!!!!! /nashorn/{id}");
     }
 
     @Override

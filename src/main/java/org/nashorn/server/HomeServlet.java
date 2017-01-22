@@ -23,7 +23,7 @@ public class HomeServlet extends HttpServlet {
     private static final CommandResolver resolver = new CommandResolver();
 
     static {
-        CommandResolver.registerGet(new TestCommand());
+        CommandResolver.registerPost(new TestCommand());
         CommandResolver.registerPost(new AnotherCommand());
     }
 
@@ -38,31 +38,8 @@ public class HomeServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        String code = getCode(req);
-        System.out.println("CODE IS " + code);
-
-        RunnableFuture<Object> task = null;
-
-        try {
-           task = TaskFactory.newScriptTask(code);
-        } catch (ScriptException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println("TASK " + task);
-        if (task == null) {
-            System.out.println("TASK IS NULL");
-        }
-
-        executor.submit(task);
-
-        while(!task.isDone()) {;}
-
-        System.out.println(task.isDone());
-
-        System.out.println("------ TASK RESULT ------");
-        System.out.println(((ScriptTask<Object>) task).getWriter().toString());
-
+        Command com = resolver.resolve(req, resp);
+        com.execute(req, resp);
     }
 
     private String getCode(HttpServletRequest req) {

@@ -6,29 +6,30 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.concurrent.*;
 
-public class ScriptTask<V> implements RunnableFuture<V> {
+public class ScriptTask implements Runnable {
 
-    private final RunnableFuture<V> futureTask;
     private final ScriptEngine engine;
+    private final FutureTask<?> futureTask;
     private final long id;
 
-    ScriptTask(Callable<V> callable, ScriptEngine engine, long id) {
-        System.out.println("CALLABLE FROM CONSTRUCTOR ");
+    ScriptTask(FutureTask<?> futureTask, ScriptEngine  engine, long id) {
+        this.futureTask = futureTask;
         this.engine = engine;
         this.id = id;
-        this.futureTask = new FutureTask<V>(callable);
     }
 
-    public StringWriter getWriter() {
-        return (StringWriter) engine.getContext().getWriter();
+    public StringBuffer getOutput() {
+        StringWriter writer = (StringWriter) engine.getContext().getWriter();
+        return writer.getBuffer();
     }
 
-    public StringWriter getErrorWriter() {
-        return (StringWriter) engine.getContext().getErrorWriter();
+    public StringBuffer getError() {
+        StringWriter error = (StringWriter) engine.getContext().getErrorWriter();
+        return error.getBuffer();
     }
 
-    public long getId() {
-        return id;
+    public boolean isDone() {
+        return futureTask.isDone();
     }
 
     @Override
@@ -36,28 +37,22 @@ public class ScriptTask<V> implements RunnableFuture<V> {
         futureTask.run();
     }
 
-    @Override
-    public boolean cancel(boolean mayInterruptIfRunning) {
-        return futureTask.cancel(mayInterruptIfRunning);
+    public boolean cancel() {
+        return futureTask.cancel(true);
     }
 
     @Override
-    public boolean isCancelled() {
-        return futureTask.isCancelled();
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ScriptTask task = (ScriptTask) o;
+
+        return id == task.id;
     }
 
     @Override
-    public boolean isDone() {
-        return futureTask.isDone();
-    }
-
-    @Override
-    public V get() throws InterruptedException, ExecutionException {
-        return futureTask.get();
-    }
-
-    @Override
-    public V get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-        return futureTask.get(timeout, unit);
+    public int hashCode() {
+        return (int) (id ^ (id >>> 32));
     }
 }

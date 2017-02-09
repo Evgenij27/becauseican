@@ -10,13 +10,24 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class TaskFactory {
 
+    private static TaskFactory instance;
+
+    public static synchronized TaskFactory getInstance() {
+        if (instance == null) {
+            instance = new TaskFactory();
+        }
+        return instance;
+    }
+
+    private TaskFactory() {}
+
     private static final String DEFAULT_ENGINE_NAME = "nashorn";
 
     private static final ScriptEngineManager MANAGER = new ScriptEngineManager();
 
-    private static AtomicLong count = new AtomicLong();
+    private static final AtomicLong id = new AtomicLong();
 
-    public static synchronized RunnableFuture<Object> newScriptTask(String code) throws ScriptException {
+    public synchronized ScriptTask newScriptTask(String code) throws ScriptException {
         String newCode = prepareCode(code);
 
         ScriptEngine engine = MANAGER.getEngineByName(DEFAULT_ENGINE_NAME);
@@ -34,16 +45,13 @@ public class TaskFactory {
 
         System.out.println("RUNNABLE IS " + runnable);
 
-        Callable<Object> callable = Executors.callable(runnable);
-
-        System.out.println("CALLABLE FROM RUNNABLE " + callable);
-
-        RunnableFuture<Object> st = new ScriptTask<Object>(callable, engine, count.getAndIncrement());
+        FutureTask<?> futureTask = new FutureTask<Void>(runnable, null);
+        ScriptTask st = new ScriptTask(futureTask, engine, id.getAndIncrement());
         System.out.println("SCRIPT TASK " + st);
         return st;
     }
 
-    private static String prepareCode(String code) {
+    private String prepareCode(String code) {
         StringBuffer buffer = new StringBuffer();
         buffer.append("function run() {").append(code).append("};");
         return buffer.toString();

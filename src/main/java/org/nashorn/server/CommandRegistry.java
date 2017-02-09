@@ -31,7 +31,7 @@ public class CommandRegistry {
         COMMANDS.put(PUT, new TreeMap<String, Command>());
         COMMANDS.put(DELETE, new TreeMap<String, Command>());
 
-        registerGet(new AnotherCommand());
+        registerPost(new AnotherCommand());
         registerPost(new TestCommand());
     }
 

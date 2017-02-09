@@ -8,6 +8,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Map;
 import java.util.concurrent.*;
 
 
@@ -23,31 +25,19 @@ public class HomeServlet extends HttpServlet {
         Command com = resolver.resolve(req, resp);
         System.out.println(com);
         com.execute(req, resp);
-
-
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         Command com = resolver.resolve(req, resp);
-        com.execute(req, resp);
-
-
-    }
-
-    private String getCode(HttpServletRequest req) {
-        BufferedReader br = null;
-        StringBuffer sb = new StringBuffer();
-        String data = null;
-        try {
-            br = req.getReader();
-            while ((data = br.readLine()) != null) {
-                sb.append(data);
-            }
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        ResponseEntity re = com.execute(req, resp);
+        resp.setStatus(re.getStatus());
+        Map<String, String> headers = re.getHeaders();
+        for (Map.Entry<String, String> entry : headers.entrySet()) {
+            resp.setHeader(entry.getKey(), entry.getValue());
         }
-        return sb.toString();
+        PrintWriter writer = resp.getWriter();
+        writer.print(re.getBody());
     }
 }

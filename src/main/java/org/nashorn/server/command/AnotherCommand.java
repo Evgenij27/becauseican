@@ -1,6 +1,5 @@
 package org.nashorn.server.command;
 
-import org.nashorn.server.ResponseEntity;
 import org.nashorn.server.db.Memory;
 import org.nashorn.server.factory.TaskFactory;
 
@@ -14,7 +13,7 @@ public class AnotherCommand implements Command {
     private final String path = "/nashorn/";
 
     @Override
-    public ResponseEntity execute(HttpServletRequest request, HttpServletResponse response)
+    public void execute(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         Memory memory = Memory.getInstance();
@@ -24,7 +23,7 @@ public class AnotherCommand implements Command {
 
 
 
-        return new ResponseEntity.Builder().build();
+
     }
 
     @Override

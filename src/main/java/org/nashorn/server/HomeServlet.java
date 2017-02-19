@@ -16,28 +16,12 @@ import java.util.concurrent.*;
 @WebServlet(name = "home", urlPatterns = {"/*"}, loadOnStartup = 1, asyncSupported = true)
 public class HomeServlet extends HttpServlet {
 
-    private final ExecutorService executor = Executors.newFixedThreadPool(10);
-    private static final CommandResolver resolver = new CommandResolver(CommandRegistry.getRegistry());
+    private final CommandResolver resolver = new CommandResolver(CommandRegistry.getRegistry());
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+    protected void service(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        Command com = resolver.resolve(req, resp);
-        System.out.println(com);
-        com.execute(req, resp);
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-        Command com = resolver.resolve(req, resp);
-        ResponseEntity re = com.execute(req, resp);
-        resp.setStatus(re.getStatus());
-        Map<String, String> headers = re.getHeaders();
-        for (Map.Entry<String, String> entry : headers.entrySet()) {
-            resp.setHeader(entry.getKey(), entry.getValue());
-        }
-        PrintWriter writer = resp.getWriter();
-        writer.print(re.getBody());
+        Command command = resolver.resolve(req, resp);
+        command.execute(req, resp);
     }
 }

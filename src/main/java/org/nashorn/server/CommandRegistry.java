@@ -4,8 +4,10 @@ import org.nashorn.server.command.AnotherCommand;
 import org.nashorn.server.command.Command;
 import org.nashorn.server.command.TestCommand;
 
-import java.util.Map;
-import java.util.TreeMap;
+import java.io.*;
+import java.net.URL;
+
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,6 +32,8 @@ public class CommandRegistry {
         COMMANDS.put(POST, new TreeMap<String, Command>());
         COMMANDS.put(PUT, new TreeMap<String, Command>());
         COMMANDS.put(DELETE, new TreeMap<String, Command>());
+
+        findCommands();
 
         registerPost(new AnotherCommand());
         registerPost(new TestCommand());
@@ -60,8 +64,6 @@ public class CommandRegistry {
             matcher.appendReplacement(sb, String.format(TEMPLATE_REPLACEMENT, tvar));
         }
         matcher.appendTail(sb);
-
-        String modifiedString = sb.toString();
 
         int strLen = sb.length();
         if (sb.charAt(strLen - 1) == '/') {
@@ -94,5 +96,73 @@ public class CommandRegistry {
 
     private static void registerDelete(Command... commands) {
         registerCommand(DELETE, commands);
+    }
+
+    private static List<Command> findCommands() {
+        String pathSeparator = System.getProperty("file.separator");
+        List<Command> commands = new ArrayList<>();
+
+        Properties prop = loadProps("config.properties");
+        String packageCommand = prop.getProperty("package.command").replace(".", "/");
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        String url = loader.getResource(packageCommand).getPath();
+        System.out.println("PATH : " + url);
+
+        processFile(url, packageCommand);
+
+        return commands;
+      }
+
+    private static void processFile(String path, String commandPackagePath) {
+        System.out.println("START RECURSION " + path);
+        File[] files = new File(path).listFiles();
+        for (File file : files) {
+            if (file.isDirectory()) {
+                System.out.println("Directory path " + file.getPath());
+                StringBuilder pathBuilder = new StringBuilder();
+                pathBuilder.append(file.getPath());
+                processFile(pathBuilder.toString(), commandPackagePath);
+            }
+            System.out.println(findFQN(file.getPath(), commandPackagePath));
+            }
+    }
+
+    private static String findFQN(String path, String commandPackage) {
+        int commandPackageStartIndex = path.indexOf(commandPackage);
+        int extensionIndex = path.lastIndexOf(".");
+        String fqn = path.substring(commandPackageStartIndex, extensionIndex).replace("/", ".");
+        System.out.println("fqn = " + fqn);
+        return fqn;
+    }
+
+
+
+    private static Properties loadProps(String fileName) {
+        Properties props = new Properties();
+        InputStream input = null;
+
+        try {
+            input = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName);
+            if (input == null) {
+                System.out.println("Can not find file " + fileName);
+            } else {
+                props.load(input);
+            }
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        } finally {
+            close(input);
+        }
+        return props;
+    }
+
+    private static void close(InputStream input) {
+        if (input != null) {
+            try {
+                input.close();
+            } catch (IOException ex) {
+                System.out.println(ex.getMessage());
+            }
+        }
     }
 }

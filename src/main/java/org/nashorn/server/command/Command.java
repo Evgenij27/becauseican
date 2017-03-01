@@ -9,6 +9,4 @@ public interface Command {
 
     void execute(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException;
-
-    String getPath();
 }

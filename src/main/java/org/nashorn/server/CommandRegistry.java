@@ -1,10 +1,13 @@
 package org.nashorn.server;
 
+import org.nashorn.server.annotation.Path;
+import org.nashorn.server.annotation.Request;
 import org.nashorn.server.command.AnotherCommand;
 import org.nashorn.server.command.Command;
 import org.nashorn.server.command.TestCommand;
 
 import java.io.*;
+import java.lang.annotation.Annotation;
 import java.net.URL;
 
 import java.util.*;
@@ -28,15 +31,15 @@ public class CommandRegistry {
             new TreeMap<String, TreeMap<String, Command>>();
 
     static {
-        COMMANDS.put(GET, new TreeMap<String, Command>());
-        COMMANDS.put(POST, new TreeMap<String, Command>());
-        COMMANDS.put(PUT, new TreeMap<String, Command>());
-        COMMANDS.put(DELETE, new TreeMap<String, Command>());
+        COMMANDS.put(GET, new TreeMap<>());
+        COMMANDS.put(POST, new TreeMap<>());
+        COMMANDS.put(PUT, new TreeMap<>());
+        COMMANDS.put(DELETE, new TreeMap<>());
 
-        findCommands();
+        scan();
 
-        registerPost(new AnotherCommand());
-        registerPost(new TestCommand());
+        System.out.println(COMMANDS);
+
     }
 
     private static CommandRegistry registry;
@@ -48,7 +51,8 @@ public class CommandRegistry {
         return registry;
     }
 
-    private CommandRegistry() {}
+    private CommandRegistry() {
+    }
 
     public Map<String, Command> getCommandByMethod(String name) {
         return COMMANDS.get(name);
@@ -75,32 +79,34 @@ public class CommandRegistry {
         return sb.toString();
     }
 
-    private static void registerCommand(String method, Command... commands) {
-        for (Command c : commands) {
-            String path = transformTemplate2Path(c.getPath());
-            COMMANDS.get(method).put(path, c);
+    private static void registerCommand(List<ClassMetadata> classMetaList) {
+        for (ClassMetadata metadata : classMetaList) {
+            String method = metadata.getMethodName();
+            String path = transformTemplate2Path(metadata.getPath());
+            Command command = makeInstance(metadata.getCommandClass());
+            COMMANDS.get(method).put(path, command);
         }
     }
 
     private static void registerGet(Command... commands) {
-        registerCommand(GET, commands);
+
     }
 
     private static void registerPost(Command... commands) {
-        registerCommand(POST, commands);
+
     }
 
     private static void registerPut(Command... commands) {
-        registerCommand(PUT, commands);
+
     }
 
     private static void registerDelete(Command... commands) {
-        registerCommand(DELETE, commands);
+
     }
 
-    private static List<Command> findCommands() {
+    private static void scan() {
         String pathSeparator = System.getProperty("file.separator");
-        List<Command> commands = new ArrayList<>();
+        List<String> commandNameList = new ArrayList<>();
 
         Properties prop = loadProps("config.properties");
         String packageCommand = prop.getProperty("package.command").replace(".", "/");
@@ -108,23 +114,29 @@ public class CommandRegistry {
         String url = loader.getResource(packageCommand).getPath();
         System.out.println("PATH : " + url);
 
-        processFile(url, packageCommand);
+        processFile(url, packageCommand, commandNameList);
 
-        return commands;
-      }
+        System.out.println("Command Name List : " + commandNameList);
 
-    private static void processFile(String path, String commandPackagePath) {
+        List<ClassMetadata> metadataList = getClassMeta(commandNameList);
+
+        System.out.println("Metadata list : " + metadataList);
+
+        registerCommand(metadataList);
+
+    }
+
+    private static void processFile(String path, String commandPackagePath, List<String> commandNamesList) {
         System.out.println("START RECURSION " + path);
         File[] files = new File(path).listFiles();
         for (File file : files) {
+            String filePath = file.getPath();
             if (file.isDirectory()) {
-                System.out.println("Directory path " + file.getPath());
-                StringBuilder pathBuilder = new StringBuilder();
-                pathBuilder.append(file.getPath());
-                processFile(pathBuilder.toString(), commandPackagePath);
+                System.out.println("Directory path " + filePath);
+                processFile(filePath, commandPackagePath, commandNamesList);
             }
-            System.out.println(findFQN(file.getPath(), commandPackagePath));
-            }
+            commandNamesList.add(findFQN(filePath, commandPackagePath));
+        }
     }
 
     private static String findFQN(String path, String commandPackage) {
@@ -134,7 +146,6 @@ public class CommandRegistry {
         System.out.println("fqn = " + fqn);
         return fqn;
     }
-
 
 
     private static Properties loadProps(String fileName) {
@@ -165,4 +176,42 @@ public class CommandRegistry {
             }
         }
     }
+
+    private static List<ClassMetadata> getClassMeta(List<String> commandNamesList) {
+        System.out.println("getClassMeta sizeOf commandNamesList : " + commandNamesList.size());
+        List<ClassMetadata> classMetaList = new ArrayList<>();
+
+        for (String commandName : commandNamesList) {
+            System.out.println("getClassMeta cycle");
+            try {
+                System.out.println("getClassMeta try");
+                Class<?> commandClass = Class.forName(commandName);
+                if (!commandClass.isAnnotation()) {
+                    Annotation[] annotations = commandClass.getDeclaredAnnotations();
+                    String requestAnnotationName = null;
+                    Path pathAnnotation = null;
+                    for (Annotation anno : annotations) {
+                        System.out.println(anno.equals(Request.class));
+                    }
+
+                    //classMetaList.add(new ClassMetadata(commandClass, pathAnnotation.path(), requestAnnotation.toString()));
+                }
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+        }
+
+        return classMetaList;
+    }
+
+    private static Command makeInstance(Class<?> clazz) {
+        Command command = null;
+        try {
+            command = (Command) clazz.newInstance();
+        } catch (InstantiationException | IllegalAccessException ex) {
+            ex.printStackTrace();
+        }
+        return command;
+    }
 }
+

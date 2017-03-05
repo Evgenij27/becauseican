@@ -4,6 +4,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Request
-public @interface GET {
+public @interface DeleteMapping {
+
+    String path() default "";
 }

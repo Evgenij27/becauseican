@@ -1,14 +1,14 @@
 package org.nashorn.server;
 
-import org.nashorn.server.annotation.Path;
-import org.nashorn.server.annotation.Request;
-import org.nashorn.server.command.AnotherCommand;
+import org.nashorn.server.annotation.DeleteMapping;
+import org.nashorn.server.annotation.GetMapping;
+import org.nashorn.server.annotation.PostMapping;
+import org.nashorn.server.annotation.PutMapping;
 import org.nashorn.server.command.Command;
-import org.nashorn.server.command.TestCommand;
+
 
 import java.io.*;
 import java.lang.annotation.Annotation;
-import java.net.URL;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -187,13 +187,23 @@ public class CommandRegistry {
                 System.out.println("getClassMeta try");
                 Class<?> commandClass = Class.forName(commandName);
                 if (!commandClass.isAnnotation()) {
-                    Annotation[] annotations = commandClass.getDeclaredAnnotations();
-                    String requestAnnotationName = null;
-                    Path pathAnnotation = null;
-                    for (Annotation anno : annotations) {
-                        System.out.println(anno.equals(Request.class));
+                    Annotation[] annotations = commandClass.getAnnotations();
+                    System.out.println(annotations.length);
+                    for (Annotation annotation : annotations) {
+                        if (annotation.annotationType() == PostMapping.class) {
+                            PostMapping pm = (PostMapping) annotation;
+                            classMetaList.add(new ClassMetadata(commandClass, pm.path(), "POST"));
+                        } else if (annotation.annotationType() == GetMapping.class) {
+                            GetMapping gm = (GetMapping) annotation;
+                            classMetaList.add(new ClassMetadata(commandClass, gm.path(), "GET"));
+                        } else if (annotation.annotationType() == DeleteMapping.class) {
+                            DeleteMapping dm = (DeleteMapping) annotation;
+                            classMetaList.add(new ClassMetadata(commandClass, dm.path(), "DELETE"));
+                        } else if (annotation.annotationType() == PutMapping.class) {
+                            PutMapping pm = (PutMapping) annotation;
+                            classMetaList.add(new ClassMetadata(commandClass, pm.path(), "PUT"));
+                        }
                     }
-
                     //classMetaList.add(new ClassMetadata(commandClass, pathAnnotation.path(), requestAnnotation.toString()));
                 }
             } catch (Throwable e) {

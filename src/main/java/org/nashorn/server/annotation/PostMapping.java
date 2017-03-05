@@ -4,6 +4,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Request
-public @interface POST {
+public @interface PostMapping {
+
+    String path() default "";
 }

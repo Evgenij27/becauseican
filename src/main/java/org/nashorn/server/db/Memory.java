@@ -1,67 +1,38 @@
 package org.nashorn.server.db;
 
-import org.nashorn.server.exception.AppException;
-import org.nashorn.server.factory.ScriptTask;
-import org.nashorn.server.factory.TaskFactory;
-
-import javax.script.ScriptException;
+import org.nashorn.server.Bucket;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class Memory {
+public class Memory implements DAO {
 
-    private static final AtomicLong idCounter = new AtomicLong();
+    private static final AtomicLong INDEX = new AtomicLong();
 
-    private static Memory instance;
-
-    public static synchronized Memory getInstance() {
-        if (instance == null) {
-            instance = new Memory();
-        }
-        return instance;
-    }
-
-    private static final ThreadPoolExecutor POOL = new ThreadPoolExecutor(
-            10,
-            20,
-            0,
-            TimeUnit.NANOSECONDS,
-            new ArrayBlockingQueue<Runnable>(100));
-    ;
-
-    private static final ConcurrentSkipListMap<Long, ScriptTask> MAP =
-            new ConcurrentSkipListMap<>();
+    private static final ConcurrentSkipListMap<Long, Bucket> TABLE = new ConcurrentSkipListMap<>();
 
     private Memory() {}
 
-    public long create(ScriptTask task) throws AppException {
-        long id = incrementId();
-        POOL.submit(task);
-        MAP.put(id, task);
+    public static final Memory INSTANCE = new Memory();
+
+    @Override
+    public long create(Bucket bucket) {
+        long id = INDEX.getAndIncrement();
+        TABLE.put(id, bucket);
         return id;
     }
 
-    public boolean delete(long id) {
-        ScriptTask task = MAP.remove(id);
-        task.cancel();
-        decrementId();
-        return POOL.remove(task);
+    @Override
+    public Bucket read(long id) {
+        return TABLE.get(id);
     }
 
-    public ScriptTask read(long id) {
-        return MAP.get(id);
+    @Override
+    public void update(long id, Bucket bucket) {
+        TABLE.replace(id, bucket);
     }
 
-    public void update(long id, ScriptTask newTask) {
-        MAP.replace(id, newTask);
-        POOL.submit(newTask);
-    }
-
-    private long incrementId() {
-        return idCounter.getAndIncrement();
-    }
-
-    private long decrementId() {
-        return idCounter.getAndDecrement();
+    @Override
+    public void delete(long id) {
+        TABLE.remove(id);
     }
 }

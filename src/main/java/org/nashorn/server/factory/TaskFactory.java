@@ -1,8 +1,29 @@
 package org.nashorn.server.factory;
 
-import javax.script.ScriptException;
+import javax.script.*;
 
-public interface TaskFactory {
+public class TaskFactory {
 
-    Runnable newTask(String code) throws ScriptException;
+    private TaskFactory() {}
+
+        public static Runnable newTask(String code, ScriptEngine engine) throws ScriptException {
+            String newCode = prepareCode(code);
+
+            Compilable compilableEngine = (Compilable) engine;
+            CompiledScript compiledScript = compilableEngine.compile(newCode);
+            compiledScript.eval();
+            Invocable inv = (Invocable) compiledScript.getEngine();
+            Runnable runnable = inv.getInterface(Runnable.class);
+            System.out.println("RUNNABLE IS " + runnable);
+            return runnable;
+        }
+
+        private static String prepareCode(String code) {
+            StringBuffer buffer = new StringBuffer();
+            buffer.append("function run() {").append(code).append("};");
+            return buffer.toString();
+        }
+
+
+
 }

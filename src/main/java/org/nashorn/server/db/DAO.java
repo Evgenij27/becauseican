@@ -1,14 +1,14 @@
 package org.nashorn.server.db;
 
-import org.nashorn.server.Bucket;
+import org.nashorn.server.DeferredResult;
 
 public interface DAO {
 
-    long create(Bucket bucket);
+    long create(DeferredResult result);
 
-    Bucket read(long id);
+    DeferredResult read(long id);
 
-    void update(long id, Bucket bucket);
+    void update(long id, DeferredResult result);
 
     void delete(long id);
 }

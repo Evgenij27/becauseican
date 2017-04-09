@@ -1,14 +1,15 @@
 package org.nashorn.server.db;
 
-import org.nashorn.server.DeferredResult;
+import javax.script.ScriptContext;
+import java.util.concurrent.Future;
 
 public interface DAO {
 
-    long create(DeferredResult result);
+    long create(Future<ScriptContext> result);
 
-    DeferredResult read(long id);
+    Future<ScriptContext> read(long id);
 
-    void update(long id, DeferredResult result);
+    void update(long id, Future<ScriptContext> result);
 
     void delete(long id);
 }

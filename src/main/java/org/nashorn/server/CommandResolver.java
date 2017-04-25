@@ -12,10 +12,19 @@ import java.util.regex.*;
 
 public class CommandResolver {
 
-    private static CommandRegistry registry;
+    private static CommandRegistry registry = CommandRegistry.getRegistry();
 
-    public CommandResolver(CommandRegistry registry) {
-        CommandResolver.registry = registry;
+    private static CommandResolver instance;
+
+    public static synchronized CommandResolver getInstance() {
+        if (instance == null) {
+            System.out.println("COMMAND RESOLVER : " + CommandResolver.class);
+            instance = new CommandResolver();
+        }
+        return instance;
+    }
+
+    private CommandResolver() {
     }
 
     public Command resolve(HttpServletRequest request, HttpServletResponse response)

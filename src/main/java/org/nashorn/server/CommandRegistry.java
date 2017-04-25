@@ -46,6 +46,7 @@ public class CommandRegistry {
 
     public static synchronized CommandRegistry getRegistry() {
         if (registry == null) {
+            System.out.println("COMMAND REGISTRY : " + CommandRegistry.class);
             registry = new CommandRegistry();
         }
         return registry;
@@ -200,8 +201,8 @@ public class CommandRegistry {
                             DeleteMapping dm = (DeleteMapping) annotation;
                             classMetaList.add(new ClassMetadata(commandClass, dm.path(), "DELETE"));
                         } else if (annotation.annotationType() == PutMapping.class) {
-                            PutMapping pm = (PutMapping) annotation;
-                            classMetaList.add(new ClassMetadata(commandClass, pm.path(), "PUT"));
+                            PutMapping putMapping = (PutMapping) annotation;
+                            classMetaList.add(new ClassMetadata(commandClass, putMapping.path(), "PUT"));
                         }
                     }
                     //classMetaList.add(new ClassMetadata(commandClass, pathAnnotation.path(), requestAnnotation.toString()));

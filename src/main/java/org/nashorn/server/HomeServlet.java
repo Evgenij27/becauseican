@@ -16,11 +16,10 @@ import java.util.concurrent.*;
 @WebServlet(name = "home", urlPatterns = {"/*"}, loadOnStartup = 1, asyncSupported = true)
 public class HomeServlet extends HttpServlet {
 
-    private final CommandResolver resolver = new CommandResolver(CommandRegistry.getRegistry());
-
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
+        CommandResolver resolver = CommandResolver.getInstance();
         Command command = resolver.resolve(req, resp);
         command.execute(req, resp);
     }

@@ -4,7 +4,7 @@ import javax.script.ScriptException;
 
 public interface NashornProcessor {
 
-    Result eval() throws ScriptException;
+    Result process() throws ScriptException;
 
 
 }

@@ -1,5 +1,7 @@
 package org.nashorn.server.db;
 
+import org.nashorn.server.core.Result;
+
 import javax.script.ScriptContext;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
@@ -8,7 +10,7 @@ public class Memory implements DAO {
 
     private static final AtomicLong INDEX = new AtomicLong();
 
-    private static final ConcurrentSkipListMap<Long, Future<ScriptContext>> TABLE =
+    private static final ConcurrentSkipListMap<Long, Future<Result>> TABLE =
             new ConcurrentSkipListMap<>();
 
     private Memory() {}
@@ -23,19 +25,19 @@ public class Memory implements DAO {
     }
 
     @Override
-    public long create(Future<ScriptContext> result) {
+    public long create(Future<Result> result) {
         long id = INDEX.incrementAndGet();
         TABLE.put(id, result);
         return id;
     }
 
     @Override
-    public Future<ScriptContext> read(long id) {
+    public Future<Result> read(long id) {
         return TABLE.get(id);
     }
 
     @Override
-    public void update(long id, Future<ScriptContext> result) {
+    public void update(long id, Future<Result> result) {
         TABLE.replace(id, result);
     }
 

@@ -13,7 +13,7 @@ public class StringNashornProcessor extends AbstractNashornProcessor {
     }
 
     @Override
-    public Result eval() throws ScriptException {
+    public Result process() throws ScriptException {
         Compilable compilable = (Compilable) engine;
         CompiledScript compiledScript = compilable.compile(script);
         compiledScript.eval();
@@ -33,17 +33,16 @@ public class StringNashornProcessor extends AbstractNashornProcessor {
         }
     }
 
-    public static StringNashornProcessorBuilder newBuilder() {
-        return new StringNashornProcessor.StringNashornProcessorBuilder();
+    public static AbstractNashornProcessorBuilder newBuilder(String script) {
+        return new StringNashornProcessorBuilder(script);
     }
 
     private static class StringNashornProcessorBuilder extends AbstractNashornProcessorBuilder {
 
         private String script;
 
-        public StringNashornProcessorBuilder setScript(String script) {
+        private StringNashornProcessorBuilder(String script) {
             this.script = script;
-            return this;
         }
 
         @Override

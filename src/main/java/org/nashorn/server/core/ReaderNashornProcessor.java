@@ -14,7 +14,7 @@ public class ReaderNashornProcessor extends AbstractNashornProcessor {
     }
 
     @Override
-    public Result eval() throws ScriptException {
+    public Result process() throws ScriptException {
         Compilable compilable = (Compilable) engine;
         CompiledScript compiledScript = compilable.compile(reader);
         compiledScript.eval();
@@ -34,17 +34,16 @@ public class ReaderNashornProcessor extends AbstractNashornProcessor {
         }
     }
 
-    public static ReaderNashornProcessorBuilder newBuilder() {
-        return new ReaderNashornProcessor.ReaderNashornProcessorBuilder();
+    public static AbstractNashornProcessorBuilder newBuilder(Reader reader) {
+        return new ReaderNashornProcessorBuilder(reader);
     }
 
     private static class ReaderNashornProcessorBuilder extends AbstractNashornProcessorBuilder {
 
         private Reader reader;
 
-        public ReaderNashornProcessorBuilder setReader(Reader reader) {
+        private ReaderNashornProcessorBuilder(Reader reader) {
             this.reader = reader;
-            return this;
         }
 
         @Override

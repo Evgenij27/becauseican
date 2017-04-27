@@ -16,9 +16,11 @@ public abstract class AbstractNashornProcessor implements NashornProcessor {
     protected AbstractNashornProcessor(AbstractNashornProcessorBuilder builder) {
         this.resultWriter = builder.resultWriter;
         this.errorWriter  = builder.errorWriter;
+        this.engine.getContext().setWriter(this.resultWriter);
+        this.engine.getContext().setErrorWriter(this.errorWriter);
     }
 
     @Override
-    public abstract Result eval() throws ScriptException;
+    public abstract Result process() throws ScriptException;
 
 }

@@ -8,12 +8,12 @@ public abstract class AbstractNashornProcessorBuilder {
     protected Writer resultWriter = new StringWriter();
     protected Writer errorWriter = new StringWriter();
 
-    public AbstractNashornProcessorBuilder setResultWriter(Writer resultWriter) {
+    public AbstractNashornProcessorBuilder saveResultTo(Writer resultWriter) {
         this.resultWriter = resultWriter;
         return this;
     }
 
-    public AbstractNashornProcessorBuilder setErrorWriter(Writer errorWriter) {
+    public AbstractNashornProcessorBuilder saveErrorTo(Writer errorWriter) {
         this.errorWriter = errorWriter;
         return this;
     }

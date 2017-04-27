@@ -12,6 +12,7 @@ public class NashornWorker implements Callable<Result> {
 
     @Override
     public Result call() throws Exception {
-        return processor.eval();
+        System.out.println("CALL................");
+        return processor.process();
     }
 }

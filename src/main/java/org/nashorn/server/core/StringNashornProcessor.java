@@ -5,17 +5,15 @@ import java.io.Writer;
 
 public class StringNashornProcessor extends AbstractNashornProcessor {
 
-    private final String script;
+    private final CompiledScript compiledScript;
 
-    private StringNashornProcessor(StringNashornProcessorBuilder builder) {
+    private StringNashornProcessor(StringNashornProcessorBuilder builder) throws ScriptException {
         super(builder);
-        this.script       = builder.script;
+        this.compiledScript = compilable.compile(builder.script);
     }
 
     @Override
     public Result process() throws ScriptException {
-        Compilable compilable = (Compilable) engine;
-        CompiledScript compiledScript = compilable.compile(script);
         compiledScript.eval();
         return new EvalResult();
     }
@@ -46,7 +44,8 @@ public class StringNashornProcessor extends AbstractNashornProcessor {
         }
 
         @Override
-        public NashornProcessor build() {
+        public NashornProcessor build() throws ScriptException {
+
             return new StringNashornProcessor(this);
         }
     }

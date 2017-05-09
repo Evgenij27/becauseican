@@ -7,6 +7,7 @@ import org.nashorn.server.core.*;
 import org.nashorn.server.db.DAO;
 import org.nashorn.server.db.Memory;
 
+import javax.script.ScriptException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -34,7 +35,13 @@ public class SubmitScriptCommand implements Command {
                 saveResultTo(new StringWriter()).
                 saveErrorTo(new StringWriter());
 
-        NashornProcessor processor = builder.build();
+        NashornProcessor processor = null;
+
+        try {
+            processor = builder.build();
+        } catch (ScriptException ex) {
+            throw new ServletException(ex);
+        }
 
         NashornWorker worker = new NashornWorker(processor);
 

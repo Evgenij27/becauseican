@@ -6,17 +6,15 @@ import java.io.Writer;
 
 public class ReaderNashornProcessor extends AbstractNashornProcessor {
 
-    private Reader reader;
+    private final CompiledScript compiledScript;
 
-    private ReaderNashornProcessor(ReaderNashornProcessorBuilder builder) {
+    private ReaderNashornProcessor(ReaderNashornProcessorBuilder builder) throws ScriptException {
         super(builder);
-        this.reader = reader;
+        this.compiledScript = compilable.compile(builder.reader);
     }
 
     @Override
     public Result process() throws ScriptException {
-        Compilable compilable = (Compilable) engine;
-        CompiledScript compiledScript = compilable.compile(reader);
         compiledScript.eval();
         return new ReaderResult();
     }
@@ -47,7 +45,7 @@ public class ReaderNashornProcessor extends AbstractNashornProcessor {
         }
 
         @Override
-        public NashornProcessor build() {
+        public NashornProcessor build() throws ScriptException {
             return new ReaderNashornProcessor(this);
         }
     }

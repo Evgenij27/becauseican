@@ -1,5 +1,6 @@
 package org.nashorn.server.core;
 
+import javax.script.ScriptException;
 import java.io.StringWriter;
 import java.io.Writer;
 
@@ -18,5 +19,5 @@ public abstract class AbstractNashornProcessorBuilder {
         return this;
     }
 
-    public abstract NashornProcessor build();
+    public abstract NashornProcessor build() throws ScriptException;
 }

@@ -2,7 +2,7 @@ package org.nashorn.server.core;
 
 import java.util.concurrent.Callable;
 
-public class NashornWorker implements Callable<Result> {
+public class NashornWorker implements Callable<NashornProcessor> {
 
     private final NashornProcessor processor;
 
@@ -11,8 +11,8 @@ public class NashornWorker implements Callable<Result> {
     }
 
     @Override
-    public Result call() throws Exception {
-        System.out.println("CALL................");
-        return processor.process();
+    public NashornProcessor call() throws Exception {
+        processor.process();
+        return processor;
     }
 }

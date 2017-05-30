@@ -13,4 +13,11 @@ public class ScriptEntity {
     public void setScript(String script) {
         this.script = script;
     }
+
+    @Override
+    public String toString() {
+        return "ScriptEntity{" +
+                "script='" + script + '\'' +
+                '}';
+    }
 }

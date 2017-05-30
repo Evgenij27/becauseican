@@ -1,7 +1,6 @@
 package org.nashorn.server.command;
 
 import org.nashorn.server.annotation.GetMapping;
-import org.nashorn.server.core.Result;
 import org.nashorn.server.db.DAO;
 import org.nashorn.server.db.Memory;
 
@@ -11,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.io.Writer;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 

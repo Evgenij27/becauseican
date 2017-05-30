@@ -1,8 +1,5 @@
 package org.nashorn.server.db;
 
-import org.nashorn.server.core.Result;
-
-import javax.script.ScriptContext;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 

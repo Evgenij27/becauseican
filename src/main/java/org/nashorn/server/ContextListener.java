@@ -7,16 +7,11 @@ import javax.servlet.annotation.WebListener;
 @WebListener
 public class ContextListener implements ServletContextListener {
 
-    private static CommandResolver resolver;
+
 
     @Override
-    public void contextInitialized(ServletContextEvent servletContextEvent) {
-        System.out.println("**** LISTENER ****");
-        resolver = CommandResolver.getInstance();
-    }
+    public void contextInitialized(ServletContextEvent servletContextEvent) {}
 
     @Override
-    public void contextDestroyed(ServletContextEvent servletContextEvent) {
-
-    }
+    public void contextDestroyed(ServletContextEvent servletContextEvent) {}
 }

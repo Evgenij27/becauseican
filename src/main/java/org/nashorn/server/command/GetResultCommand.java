@@ -15,8 +15,11 @@ import java.util.concurrent.Future;
 
 @GetMapping(path = "/nashorn/{id}")
 public class GetResultCommand implements Command {
-
     @Override
+    public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+    }
+/*   @Override
     public void execute(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -53,4 +56,5 @@ public class GetResultCommand implements Command {
             throw new ServletException(e);
         }
     }
+    */
 }

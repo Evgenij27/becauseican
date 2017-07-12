@@ -1,17 +1,15 @@
 package org.nashorn.server;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 public class ScriptEntity {
 
+    @JsonProperty
     private String script;
 
     public String getScript() {
         return script;
-    }
-
-    public void setScript(String script) {
-        this.script = script;
     }
 
     @Override

@@ -70,9 +70,9 @@ public class CommandRegistry {
         }
         matcher.appendTail(sb);
 
-        int strLen = sb.length();
-        if (sb.charAt(strLen - 1) == '/') {
-            sb.deleteCharAt(strLen - 1);
+        int lastChar = sb.length() - 1;
+        if (sb.charAt(lastChar) == '/') {
+            sb.deleteCharAt(lastChar);
 
         }
         sb.append(END_TEMPLATE);

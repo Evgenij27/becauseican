@@ -24,7 +24,7 @@ public class SubmitScriptCommand implements Command {
     public void execute(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        ObjectMapper mapper = new ObjectMapper();
+       /* ObjectMapper mapper = new ObjectMapper();
         ScriptEntity scriptEntity = mapper.readValue(request.getReader(), ScriptEntity.class);
 
 
@@ -51,6 +51,6 @@ public class SubmitScriptCommand implements Command {
         long id = memory.create(result);
 
         response.setStatus(HttpServletResponse.SC_CREATED);
-        response.setHeader("Location", String.valueOf(id));
+        response.setHeader("Location", String.valueOf(id));*/
     }
 }

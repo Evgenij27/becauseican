@@ -6,14 +6,6 @@ import java.io.StringWriter;
 
 public interface NashornProcessor {
 
-    void setAndCheck(String script) throws ScriptException;
-
-    void setAndCheck(Reader reader) throws ScriptException;
-
     void process() throws ScriptException;
-
-    StringWriter getBuffer();
-
-    StringWriter getError();
 
 }

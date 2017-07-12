@@ -1,5 +1,6 @@
 package org.nashorn.server.core;
 
+import javax.script.ScriptException;
 import java.util.concurrent.Callable;
 
 public class NashornWorker implements Callable<NashornProcessor> {

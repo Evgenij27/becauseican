@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class Memory implements DAO {
 
-    private static final AtomicLong INDEX = new AtomicLong();
+    /*private static final AtomicLong INDEX = new AtomicLong();
 
     private static final ConcurrentSkipListMap<Long, Future<Result>> TABLE =
             new ConcurrentSkipListMap<>();
@@ -19,9 +19,9 @@ public class Memory implements DAO {
             instance = new Memory();
         }
         return instance;
-    }
+    }*/
 
-    @Override
+    /*@Override
     public long create(Future<Result> result) {
         long id = INDEX.incrementAndGet();
         TABLE.put(id, result);
@@ -41,5 +41,5 @@ public class Memory implements DAO {
     @Override
     public void delete(long id) {
         TABLE.remove(id);
-    }
+    }*/
 }

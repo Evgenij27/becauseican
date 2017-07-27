@@ -3,9 +3,10 @@ package org.nashorn.server.core;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.nashorn.server.ScriptEntity;
 
+import javax.script.CompiledScript;
 import javax.script.ScriptException;
+import javax.script.SimpleScriptContext;
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -14,6 +15,8 @@ public class NashornHandler {
 
     public void handle(HttpServletRequest req, HttpServletResponse resp, NashornServiceFactory factory)
             throws IOException, ServletException {
+
+        resp.setContentType("text/plain;cahrset='UTF-8'");
 
         ObjectMapper mapper = new ObjectMapper();
         ScriptEntity entity = mapper.readValue(req.getReader(), ScriptEntity.class);
@@ -25,40 +28,42 @@ public class NashornHandler {
         StringWriter output = new StringWriter();
         StringWriter error  = new StringWriter();
 
+        CompiledScript compiledScript = null;
+        try {
+            compiledScript = NashornScriptCompiler.compile(script);
+        } catch (ScriptException ex) {
+            ex.printStackTrace();
+            throw new ServletException(ex);
+        }
+
         service.setOutputBuffer(output);
         service.setErrorBuffer(error);
 
         StringBuffer outputBuf = output.getBuffer();
+        StringBuffer errorBuf  = error.getBuffer();
 
-        int prevSize = 0;
-        int newSize  = 0;
+        int prevSize, newSize = 0;
 
         try(final PrintWriter writer = resp.getWriter()) {
             System.out.println("Start service");
-            service.submit(script);
-            do {
-                if (writer.checkError()) {
-                    service.cancel(true);
-                    throw new IOException("IO Error");
-                }
-
-                /*
-                    Writting a chunk of data to client
-                 */
-                newSize = outputBuf.length();
-                if ((newSize - prevSize) <= 20) {
-                    writer.write(outputBuf.substring(prevSize, newSize));
+            try {
+                service.submit(script);
+                do {
+                    if (writer.checkError()) {
+                        service.cancel(true);
+                        throw new IOException("IO Error");
+                    }
+                    // Write to client
                     prevSize = newSize;
-                } else {
+                    newSize = outputBuf.length();
                     writer.write(outputBuf.substring(prevSize, newSize));
-                    prevSize = newSize;
-                }
-            } while (!service.isDone());
-
+                } while (!service.isDone());
+            } catch (ScriptException ex) {
+                ex.printStackTrace();
+                writer.write(errorBuf.toString());
+            }
         } catch (IOException ex) {
-            System.out.println(ex.getMessage());
-        } catch (ScriptException e) {
-            System.out.println(e.getMessage());
+            ex.printStackTrace();
         }
 
         System.out.println("isDone?      : " + service.isDone());

@@ -17,13 +17,11 @@ public class NashornProcessor {
     }
 
     public NashornExecutionResult<Void> evalAsync(ExecutorService executor) throws ScriptException {
-        synchronized (executor) {
             future = executor.submit(() -> {
                 compiledScript.eval();
                 return null;
             });
             return new SimpleNashornExecutionResult();
-        }
     }
 
     /*
@@ -36,17 +34,13 @@ public class NashornProcessor {
         }
 
         @Override
-        public StringBuffer getOutputBuffer() {
-            Writer writer = getEngineContext().getWriter();
-            StringWriter sw = (StringWriter) writer;
-            return sw.getBuffer();
+        public Writer getOutputWriter() {
+            return getEngineContext().getWriter();
         }
 
         @Override
-        public StringBuffer getErrorBuffer() {
-            Writer writer = getEngineContext().getErrorWriter();
-            StringWriter sw = (StringWriter) writer;
-            return sw.getBuffer();
+        public Writer getErrorWriter() {
+            return getEngineContext().getErrorWriter();
         }
 
         @Override

@@ -1,21 +1,13 @@
 package org.nashorn.server.command;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.nashorn.server.ScriptEntity;
+import org.nashorn.server.CommonPool;
 import org.nashorn.server.annotation.PostMapping;
-import org.nashorn.server.core.*;
-import org.nashorn.server.db.DAO;
-import org.nashorn.server.db.Memory;
 
-import javax.script.ScriptException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 @PostMapping(path = "/nashorn")
 public class SubmitScriptCommand implements Command {
@@ -52,5 +44,6 @@ public class SubmitScriptCommand implements Command {
 
         response.setStatus(HttpServletResponse.SC_CREATED);
         response.setHeader("Location", String.valueOf(id));*/
+
     }
 }

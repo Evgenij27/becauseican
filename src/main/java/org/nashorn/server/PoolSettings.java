@@ -36,4 +36,15 @@ public class PoolSettings {
     public int getWorkQueueSize() {
         return workQueueSize;
     }
+
+    @Override
+    public String toString() {
+        return "PoolSettings{" +
+                "corePoolSize=" + corePoolSize +
+                ", maximumPoolSize=" + maximumPoolSize +
+                ", keepAliveTime=" + keepAliveTime +
+                ", timeUnit='" + timeUnit + '\'' +
+                ", workQueueSize=" + workQueueSize +
+                '}';
+    }
 }

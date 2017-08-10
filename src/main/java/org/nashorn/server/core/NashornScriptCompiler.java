@@ -11,14 +11,14 @@ public class NashornScriptCompiler {
         this.compilable = compilable;
     }
 
-    public NashornProcessor compile(String script) throws ScriptException {
+    public NashornExecutionTask compile(String script) throws ScriptException {
         CompiledScript compiledScript = compilable.compile(script);
-        return new NashornProcessor(compiledScript);
+        return new NashornExecutionTask(compiledScript);
     }
 
-    public NashornProcessor compile(Reader reader) throws ScriptException {
+    public NashornExecutionTask compile(Reader reader) throws ScriptException {
         CompiledScript compiledScript = compilable.compile(reader);
-        return new NashornProcessor(compiledScript);
+        return new NashornExecutionTask(compiledScript);
     }
 
 }

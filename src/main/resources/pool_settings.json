@@ -1,0 +1,7 @@
+{
+  "corePoolSize" : 10,
+  "maximumPoolSize" : 15,
+  "keepAliveTime" : 10,
+  "timeUnit" : "ns",
+  "workQueueSize" : 50
+}

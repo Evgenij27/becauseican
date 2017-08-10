@@ -9,13 +9,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.io.Writer;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.nashorn.server.core.NashornCompilableEngineFactory;
-import org.nashorn.server.core.NashornExecutionResult;
-import org.nashorn.server.core.NashornProcessor;
+import org.nashorn.server.core.NashornExecutionTask;
 import org.nashorn.server.core.NashornScriptCompiler;
 
 @WebServlet(name = "blockServlet", urlPatterns = {"/block"}, loadOnStartup = 1)
@@ -39,39 +38,42 @@ public class BlockServlet extends HttpServlet {
         Compilable compilable = ncef.newCompilableEngine(context);
         NashornScriptCompiler compiler = new NashornScriptCompiler(compilable);
 
-        NashornProcessor processor = null;
+        NashornExecutionTask task = null;
         try {
-            processor = compiler.compile(script);
+            task = compiler.compile(script);
         } catch (ScriptException ex) {
             throw new ServletException(ex);
         }
 
         ExecutorService executor = CommonPool.getInstance();
-        NashornExecutionResult<Void> executionResult = null;
+        executor.submit(task);
 
-        try {
-            executionResult = processor.evalAsync(executor);
-        } catch (ScriptException ex) {
-            throw new ServletException(ex);
-        }
-
-        Writer writer = executionResult.getOutputWriter();
-        StringWriter sw = (StringWriter) writer;
-        StringBuffer buf = sw.getBuffer();
+        StringBuffer buf = task.getOutputBuffer();
 
         try (final PrintWriter responseWriter = resp.getWriter()) {
-            int prevSize   = 0;
-            int futureSize = 0;
-            do  {
-                if (responseWriter.checkError()) {
-                    throw new IOException();
-                }
-                prevSize = futureSize;
-                futureSize = buf.length();
-                responseWriter.write(buf.substring(prevSize, futureSize));
-            } while (!executionResult.isDone());
+            try {
+                int prevSize = 0;
+                int futureSize = 0;
+                do {
+                    if (responseWriter.checkError()) {
+                        throw new IOException();
+                    }
+                    prevSize = futureSize;
+                    futureSize = buf.length();
+                    responseWriter.write(buf.substring(prevSize, futureSize));
+                } while (!task.isDone());
+                /*
+                    Check for errors during execution
+                 */
+                task.get();
+            } catch (InterruptedException interrupt) {
+                interrupt.printStackTrace();
+            } catch (ExecutionException ex) {
+                ex.printStackTrace();
+            }
+
         } catch (IOException ex) {
-            executionResult.cancel(true);
+            task.cancel(true);
             throw new ServletException(ex);
         }
     }

@@ -26,8 +26,8 @@ public class CommonPool extends ThreadPoolExecutor {
     }
 
     /*
-        Better move this ability to Jackson JSON Parser.
-        Resolve time unit during convertion if it's *возможно*.
+        Better move this functional to Jackson JSON Parser.
+        Resolve time unit during convertion if it's possible.
         .
      */
     private static TimeUnit resolveTimeUnit(String tunit) {

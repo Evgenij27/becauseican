@@ -2,6 +2,7 @@ package org.nashorn.server;
 
 import javax.script.*;
 import javax.servlet.*;
+import javax.servlet.annotation.WebInitParam;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -17,7 +18,11 @@ import org.nashorn.server.core.NashornCompilableEngineFactory;
 import org.nashorn.server.core.NashornExecutionTask;
 import org.nashorn.server.core.NashornScriptCompiler;
 
-@WebServlet(name = "blockServlet", urlPatterns = {"/block"}, loadOnStartup = 1)
+@WebServlet(
+        name = "blockServlet",
+        urlPatterns = {"/block"},
+        loadOnStartup = 1
+       )
 public class BlockServlet extends HttpServlet {
 
     @Override

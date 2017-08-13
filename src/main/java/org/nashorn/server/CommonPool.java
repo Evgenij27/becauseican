@@ -15,32 +15,14 @@ public class CommonPool extends ThreadPoolExecutor {
     private static int workQueueSize   = 60;
 
     /*
-        Without check yet
+        Value checked in deserializer
      */
     public static void init(PoolSettings settings) {
         CommonPool.corePoolSize    = settings.getCorePoolSize();
         CommonPool.maximumPoolSize = settings.getMaximumPoolSize();
         CommonPool.keepAliveTime   = settings.getKeepAliveTime();
-        CommonPool.timeUnit        = resolveTimeUnit(settings.getTimeUnit());
+        CommonPool.timeUnit        = settings.getTimeUnit();
         CommonPool.workQueueSize   = settings.getWorkQueueSize();
-    }
-
-    /*
-        Better move this functional to Jackson JSON Parser.
-        Resolve time unit during convertion if it's possible.
-        .
-     */
-    private static TimeUnit resolveTimeUnit(String tunit) {
-        TimeUnit timeUnit = null;
-        switch (tunit) {
-            case "m"  : timeUnit = TimeUnit.MINUTES;      break;
-            case "s"  : timeUnit = TimeUnit.SECONDS;      break;
-            case "ms" : timeUnit = TimeUnit.MILLISECONDS; break;
-            case "us" : timeUnit = TimeUnit.MICROSECONDS; break;
-            case "ns" : timeUnit = TimeUnit.NANOSECONDS;  break;
-            default   : throw new IllegalArgumentException();
-        }
-        return timeUnit;
     }
 
     private static CommonPool instance;

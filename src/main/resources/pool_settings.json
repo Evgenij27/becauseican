@@ -1,5 +1,5 @@
 {
-  "corePoolSize" : 10,
+  "corePoolSize" : -40,
   "maximumPoolSize" : 15,
   "keepAliveTime" : 10,
   "timeUnit" : "ns",

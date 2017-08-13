@@ -1,21 +1,26 @@
 package org.nashorn.server;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import java.util.concurrent.TimeUnit;
 
+@JsonDeserialize(using = PoolSettingsDeserializer.class)
 public class PoolSettings {
 
-    @JsonProperty
-    private int corePoolSize;
-    @JsonProperty
-    private int maximumPoolSize;
-    @JsonProperty
-    private long keepAliveTime;
-    @JsonProperty
-    private String timeUnit;
-    @JsonProperty
-    private int workQueueSize;
+    private final int corePoolSize;
+    private final int maximumPoolSize;
+    private final long keepAliveTime;
+    private final TimeUnit timeUnit;
+    private final int workQueueSize;
+
+    public PoolSettings(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit timeUnit, int workQueueSize) {
+        this.corePoolSize = corePoolSize;
+        this.maximumPoolSize = maximumPoolSize;
+        this.keepAliveTime = keepAliveTime;
+        this.timeUnit = timeUnit;
+        this.workQueueSize = workQueueSize;
+    }
 
     public int getCorePoolSize() {
         return corePoolSize;
@@ -29,7 +34,7 @@ public class PoolSettings {
         return keepAliveTime;
     }
 
-    public String getTimeUnit() {
+    public TimeUnit getTimeUnit() {
         return timeUnit;
     }
 

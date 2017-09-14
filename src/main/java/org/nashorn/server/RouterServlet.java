@@ -18,18 +18,36 @@ import org.nashorn.server.core.NashornCompilableEngineFactory;
 import org.nashorn.server.core.NashornExecutionTask;
 import org.nashorn.server.core.NashornScriptCompiler;
 
+import org.apache.log4j.Logger;
+
 @WebServlet(
-        name = "blockServlet",
-        urlPatterns = {"/block"},
+        name = "routerServlet",
+        urlPatterns = {"/*"},
         loadOnStartup = 1
        )
-public class BlockServlet extends HttpServlet {
+public class RouterServlet extends HttpServlet {
+
+    private static final Logger LOGGER = Logger.getLogger(RouterServlet.class);
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+    protected void service(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        resp.setContentType("text/plain;charset=UTF-8");
+        LOGGER.info("START SERVICE");
+
+        String apiVersion = (String) req.getAttribute("API_VERSION");
+        String apiType    = (String) req.getAttribute("API_TYPE");
+
+        LOGGER.debug("API VERSION: " + apiVersion);
+        LOGGER.debug("API TYPE   : " + apiType);
+
+
+
+
+
+
+
+        /*
 
         ScriptEntity se = getScriptEntity(req);
         String script = se.getScript();
@@ -67,9 +85,11 @@ public class BlockServlet extends HttpServlet {
                     futureSize = buf.length();
                     responseWriter.write(buf.substring(prevSize, futureSize));
                 } while (!task.isDone());
+        */
                 /*
                     Check for errors during execution
                  */
+        /*
                 task.get();
             } catch (InterruptedException interrupt) {
                 interrupt.printStackTrace();
@@ -81,10 +101,14 @@ public class BlockServlet extends HttpServlet {
             task.cancel(true);
             throw new ServletException(ex);
         }
-    }
+        */
+}
 
+    
     private ScriptEntity getScriptEntity(HttpServletRequest req) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.readValue(req.getReader(), ScriptEntity.class);
     }
+
+
 }

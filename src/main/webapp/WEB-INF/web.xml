@@ -7,7 +7,7 @@ http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
 
     <context-param>
         <param-name>baseDir</param-name>
-        <param-value>/home/evgenij/java/web/nashorn</param-value>
+        <param-value>Hello!</param-value>
     </context-param>
 
 </web-app>

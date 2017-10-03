@@ -1,24 +1,22 @@
 package org.nashorn.server;
 
-import javax.script.*;
+
 import javax.servlet.*;
-import javax.servlet.annotation.WebInitParam;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
+
+import java.util.concurrent.TimeoutException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.nashorn.server.core.NashornCompilableEngineFactory;
-import org.nashorn.server.core.NashornExecutionTask;
-import org.nashorn.server.core.NashornScriptCompiler;
 
 import org.apache.log4j.Logger;
+
+import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.Channel;
 
 @WebServlet(
         name = "routerServlet",
@@ -28,6 +26,32 @@ import org.apache.log4j.Logger;
 public class RouterServlet extends HttpServlet {
 
     private static final Logger LOGGER = Logger.getLogger(RouterServlet.class);
+
+    private static final String QUEUE_NAME = "hello";
+
+    private Connection conn;
+    private Channel channel;
+
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        ServletContext context = config.getServletContext();
+        ConnectionFactory factory = (ConnectionFactory) context.getAttribute("RABBITMQ_FACTORY");
+
+        try {
+            conn = factory.newConnection();
+        } catch (IOException |TimeoutException ex) {
+            LOGGER.error("Error during creating connection", ex);
+            throw new ServletException(ex);
+        }
+
+        try {
+            channel = conn.createChannel();
+        } catch (IOException ex) {
+            LOGGER.error("Error during creating channel", ex);
+            throw new ServletException(ex);
+        }
+
+    }
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp)
@@ -41,74 +65,42 @@ public class RouterServlet extends HttpServlet {
         LOGGER.debug("API VERSION: " + apiVersion);
         LOGGER.debug("API TYPE   : " + apiType);
 
+        String uriMessage = req.getRequestURI();
 
+        LOGGER.info("Sending... " + uriMessage);
+        channel.basicPublish("", QUEUE_NAME, null, uriMessage.getBytes());
+    }
 
+    @Override
+    public void destroy() {
+        close(channel);
+        close(conn);
+    }
 
-
-
-
-        /*
-
-        ScriptEntity se = getScriptEntity(req);
-        String script = se.getScript();
-
-        NashornCompilableEngineFactory ncef = new NashornCompilableEngineFactory();
-
-        ScriptContext context = new SimpleScriptContext();
-        context.setWriter(new StringWriter());
-        context.setErrorWriter(new StringWriter());
-
-        Compilable compilable = ncef.newCompilableEngine(context);
-        NashornScriptCompiler compiler = new NashornScriptCompiler(compilable);
-
-        NashornExecutionTask task = null;
-        try {
-            task = compiler.compile(script);
-        } catch (ScriptException ex) {
-            throw new ServletException(ex);
-        }
-
-        ExecutorService executor = CommonPool.getInstance();
-        executor.submit(task);
-
-        StringBuffer buf = task.getOutputBuffer();
-
-        try (final PrintWriter responseWriter = resp.getWriter()) {
+    private void close(Connection conn) {
+        if (conn != null) {
             try {
-                int prevSize = 0;
-                int futureSize = 0;
-                do {
-                    if (responseWriter.checkError()) {
-                        throw new IOException();
-                    }
-                    prevSize = futureSize;
-                    futureSize = buf.length();
-                    responseWriter.write(buf.substring(prevSize, futureSize));
-                } while (!task.isDone());
-        */
-                /*
-                    Check for errors during execution
-                 */
-        /*
-                task.get();
-            } catch (InterruptedException interrupt) {
-                interrupt.printStackTrace();
-            } catch (ExecutionException ex) {
-                ex.printStackTrace();
+                conn.close();
+            } catch (IOException ex) {
+                LOGGER.error("Cannot close connection", ex);
             }
-
-        } catch (IOException ex) {
-            task.cancel(true);
-            throw new ServletException(ex);
         }
-        */
-}
+    }
 
-    
+    private void close(Channel channel) {
+        if (channel != null) {
+            try {
+                channel.close();
+            } catch (IOException ex) {
+                LOGGER.error("Cannot close channel", ex);
+            } catch (TimeoutException tex) {
+                LOGGER.error("Timeout has expired during closing the channel", tex);
+            }
+        }
+    }
+
     private ScriptEntity getScriptEntity(HttpServletRequest req) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.readValue(req.getReader(), ScriptEntity.class);
     }
-
-
 }

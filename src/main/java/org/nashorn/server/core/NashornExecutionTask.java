@@ -10,7 +10,7 @@ import java.util.concurrent.*;
 public class NashornExecutionTask extends FutureTask<Void> {
 
     private final CompiledScript compiledScript;
-    private Future<Void> future;
+    //private Future<Void> future;
 
     public NashornExecutionTask(CompiledScript compiledScript) {
         super(() -> {

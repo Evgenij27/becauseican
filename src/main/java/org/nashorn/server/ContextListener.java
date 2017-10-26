@@ -1,11 +1,8 @@
 package org.nashorn.server;
 
-
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import org.apache.log4j.Logger;
-import org.nashorn.server.intercom.RequestRecv;
+import org.nashorn.server.intercom.CommandResolver;
 
 import javax.naming.NamingException;
 import javax.servlet.ServletContext;
@@ -18,15 +15,12 @@ import javax.naming.InitialContext;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
 
 @WebListener
 public class ContextListener implements ServletContextListener {
 
     private static final Logger LOGGER = Logger.getLogger(ContextListener.class);
-
-    private static final String QUEUE_NAME = "hello";
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
@@ -44,18 +38,24 @@ public class ContextListener implements ServletContextListener {
         context.setAttribute("RABBITMQ_FACTORY", factory);
 
 
-        LOGGER.info("Getting CommandResolverExecutor from JNDI");
+        /*LOGGER.info("Getting CommandResolverExecutor from JNDI");
 
-        ExecutorService commandResolverExecutor = getExecutorFromJNDI("pool/CommandResolverExecutor");
+        ExecutorService commandResolverExecutorPool = getExecutorFromJNDI("pool/CommandResolverExecutor");
         LOGGER.info("CommandResolverExecutor");
-        LOGGER.info(commandResolverExecutor);
+        LOGGER.info(commandResolverExecutorPool);
 
-        /*
-            Starting consumer thread
-        */
+        ExecutorService commandExecutorPool = getExecutorFromJNDI("pool/CommandExecutor");
+        LOGGER.info("CommandExecutor");
+        LOGGER.info(commandExecutorPool);
+
+        *//*
+            Starting command resolver thread
+        *//*
         Runnable commandResolver = null;
+        Runnable commandExecutor = null;
         try {
-            commandResolver = new RequestRecv(factory, QUEUE_NAME);
+            commandResolver = new CommandResolver(factory, "router", "command");
+            commandExecutor = new CommandExecutor(factory, "command", null, commandExecutorPool);
         } catch (IOException ioex) {
             LOGGER.error("Cannot create connect to RabbitMQ");
             throw new RuntimeException(ioex);
@@ -64,10 +64,16 @@ public class ContextListener implements ServletContextListener {
             throw new RuntimeException(tex);
         }
 
-        commandResolverExecutor.submit(commandResolver);
+        commandResolverExecutorPool.submit(commandResolver);
+        commandResolverExecutorPool.submit(commandExecutor);
+
         LOGGER.info("CommandResolverRunnable");
         LOGGER.info(commandResolver);
 
+        LOGGER.info("CommandExecutorRunnable");
+        LOGGER.info(commandExecutor);
+
+*/
     }
 
     @Override
@@ -77,7 +83,7 @@ public class ContextListener implements ServletContextListener {
          */
         LOGGER.info("Context destroyed.");
 
-        ServletContext context = servletContextEvent.getServletContext();
+        /*ServletContext context = servletContextEvent.getServletContext();
 
         LOGGER.info("Shutdowning CommandResolverExecutor");
         ExecutorService commandResolverExecutor = getExecutorFromJNDI("pool/CommandResolverExecutor");
@@ -86,7 +92,7 @@ public class ContextListener implements ServletContextListener {
         LOGGER.info(commandResolverExecutor);
 
         List<Runnable> runnableList = commandResolverExecutor.shutdownNow();
-        LOGGER.debug(runnableList);
+        LOGGER.debug(runnableList);*/
 
     }
 

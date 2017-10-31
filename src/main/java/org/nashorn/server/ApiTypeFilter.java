@@ -15,8 +15,7 @@ import org.apache.log4j.Logger;
         servletNames = {"routerServlet"},
         urlPatterns = "/*",
         dispatcherTypes = {
-                DispatcherType.REQUEST,
-                DispatcherType.ASYNC
+                DispatcherType.REQUEST
         },
         asyncSupported = true)
 public class ApiTypeFilter implements Filter {
@@ -24,6 +23,7 @@ public class ApiTypeFilter implements Filter {
     private static final Logger LOGGER = Logger.getLogger(ApiTypeFilter.class);
 
     private final Pattern pattern = Pattern.compile("/\\w*/v\\d{1}\\p{Punct}\\d{1}/(?<type>async|block)");
+
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {}

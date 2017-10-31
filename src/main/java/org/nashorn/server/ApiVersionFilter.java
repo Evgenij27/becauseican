@@ -18,8 +18,7 @@ import org.apache.log4j.Logger;
         servletNames = {"routerServlet"},
         urlPatterns = "/*",
         dispatcherTypes = {
-                DispatcherType.REQUEST,
-                DispatcherType.ASYNC
+                DispatcherType.REQUEST
         },
         asyncSupported = true)
 public class ApiVersionFilter  implements Filter {

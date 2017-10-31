@@ -52,7 +52,31 @@ public class RouterServlet extends HttpServlet {
     protected void service(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        LOGGER.info("START SERVICE");
+        String dispatchPath = "";
+        LOGGER.info("START ASYNC");
+
+        AsyncContext ac = req.startAsync(req, resp);
+        String uri = req.getRequestURI();
+        String apiType = (String) req.getAttribute("API_TYPE");
+        LOGGER.info("Requested URI: " + uri);
+
+        if (apiType.equals("block")) {
+            dispatchPath = "/blockProc";
+        }
+
+        if (apiType.equals("async")) {
+            dispatchPath = "/asyncProc";
+        }
+
+        if (dispatchPath.isEmpty()) {
+            throw new ServletException();
+        }
+
+        LOGGER.info("Dispathc to: " + dispatchPath);
+        ac.dispatch(dispatchPath);
+
+
+        /*LOGGER.info("START SERVICE");
 
         final AsyncContext actx = req.startAsync();
 
@@ -69,7 +93,7 @@ public class RouterServlet extends HttpServlet {
             try {
                 conn = factory.newConnection();
 
-                /* Create channel, declare Exchange and response queue */
+                *//* Create channel, declare Exchange and response queue *//*
                 LOGGER.debug("Create channel, declare Exchange and response queue");
                 channel = conn.createChannel();
                 channel.exchangeDeclare(EXCHANGE_NAME, BuiltinExchangeType.DIRECT);
@@ -87,9 +111,9 @@ public class RouterServlet extends HttpServlet {
 
                         long respCorrId = Integer.parseInt(properties.getCorrelationId());
 
-                            /*
+                            *//*
                                 Process the response if corrIds are the same
-                             */
+                             *//*
                         LOGGER.info("Checking Correlation IDs");
                         LOGGER.debug("Request ID | Response ID = " + corrId + " | " + respCorrId);
                         if (respCorrId == corrId) {
@@ -104,28 +128,28 @@ public class RouterServlet extends HttpServlet {
                     }
                 };
 
-                /* Building routing key */
+                *//* Building routing key *//*
                 String routingKey = buildRoutingKey(actx.getRequest());
                 LOGGER.info(routingKey);
 
-                /* Build RequestObject from HttpServletRequest */
+                *//* Build RequestObject from HttpServletRequest *//*
                 RequestObject ro = buildRequestObject(corrId, (HttpServletRequest) actx.getRequest());
 
                 byte[] bRequestObject = SerDesUtils.serialize(ro);
 
-                /* Properties for message */
+                *//* Properties for message *//*
                 AMQP.BasicProperties props =
                         new AMQP.BasicProperties.Builder()
                                 .correlationId(String.valueOf(ro.getId()))
                                 .replyTo(RESPONSE_QUEUE_NAME)
                                 .build();
 
-                /* Publish a message */
+                *//* Publish a message *//*
                 LOGGER.info("Publish a message");
                 channel.basicPublish(EXCHANGE_NAME, routingKey, props, bRequestObject);
                 channel.basicConsume(RESPONSE_QUEUE_NAME, true, consumer);
 
-                /* Blocking waiting for a message */
+                *//* Blocking waiting for a message *//*
                 LOGGER.info("Waiting for a message");
                 String message = null;
                 try {
@@ -134,9 +158,9 @@ public class RouterServlet extends HttpServlet {
                     LOGGER.error("Error during taking a message", ex);
                 }
 
-                    /*
+                    *//*
                         Building response
-                     */
+                     *//*
                 LOGGER.info("Building response");
                 HttpServletResponse httpResponse = (HttpServletResponse) actx.getResponse();
                 try (final PrintWriter writer = httpResponse.getWriter()) {
@@ -153,7 +177,7 @@ public class RouterServlet extends HttpServlet {
                 actx.complete();
 
             } catch (IOException | TimeoutException ex) {
-                /* Log error message and create error message to the client */
+                *//* Log error message and create error message to the client *//*
                 LOGGER.error("Some problem with Connection", ex);
                 ex.printStackTrace();
             } finally {
@@ -165,7 +189,7 @@ public class RouterServlet extends HttpServlet {
 
 
         LOGGER.info("END SERVICE");
-
+*/
     }
 
     private String buildRoutingKey(ServletRequest request) {

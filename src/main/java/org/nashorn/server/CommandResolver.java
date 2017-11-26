@@ -1,34 +1,23 @@
 package org.nashorn.server;
 
-import org.nashorn.server.command.Command;
+import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
 import java.util.regex.*;
 
 public class CommandResolver {
 
-    private static CommandRegistry registry = CommandRegistry.getRegistry();
+    private final Logger logger = Logger.getLogger(CommandResolver.class);
 
-    private static CommandResolver instance;
+    private final Registry registry;
 
-    public static synchronized CommandResolver getInstance() {
-        if (instance == null) {
-            System.out.println("COMMAND RESOLVER : " + CommandResolver.class);
-            instance = new CommandResolver();
-        }
-        return instance;
+    public CommandResolver(Registry registry) {
+        this.registry = registry;
     }
 
-    private CommandResolver() {
-    }
-
-    public Command resolve(HttpServletRequest request, HttpServletResponse response)
-        throws IOException, ServletException {
+    public Command resolve(HttpServletRequest request) throws ServletException {
 
         Command com = null;
         Pattern pattern = null;
@@ -36,14 +25,16 @@ public class CommandResolver {
 
         String uri = request.getRequestURI();
         System.out.println("URI -> " + uri);
+        logger.info("URI " + uri);
         String methodName = request.getMethod();
         System.out.println("Method name -> " + methodName);
 
-        Map<String, Command> comms = registry.getCommandByMethod(methodName);
-
+        Map<String, Command> comms = getCommandByMethod(methodName);
+        logger.info("COMMANDS " + comms);
         for (Map.Entry<String, Command> entry : comms.entrySet()) {
             String template = entry.getKey();
             pattern = Pattern.compile(template);
+            logger.info("TEMPLATE " + template);
             matcher = pattern.matcher(uri);
             if (matcher.matches()) {
                 for (String groupName : getPathVariables(template)) {
@@ -69,5 +60,26 @@ public class CommandResolver {
             pathVariables.add(groupName.substring(1, groupName.length() - 1));
         }
         return pathVariables;
+    }
+
+    private Map<String, Command> getCommandByMethod(String methodName) {
+        Map<String, Command> r = null;
+
+        if (methodName.equals("GET")) {
+            r = registry.getRegistry();
+        }
+
+        if (methodName.equals("POST")) {
+            r = registry.postRegistry();
+        }
+
+        if (methodName.equals("PUT")) {
+            r = registry.putRegistry();
+        }
+
+        if (methodName.equals("DELETE")) {
+            r = registry.deleteRegistry();
+        }
+        return r;
     }
 }

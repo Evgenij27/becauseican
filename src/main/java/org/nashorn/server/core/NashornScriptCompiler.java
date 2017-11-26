@@ -5,20 +5,24 @@ import java.io.Reader;
 
 public class NashornScriptCompiler {
 
-    private final Compilable compilable;
+    private static final String ENGINE_NAME = "nashorn";
 
-    public NashornScriptCompiler(Compilable compilable) {
-        this.compilable = compilable;
+    public CompiledScript compile(String script) throws ScriptException {
+        Compilable compilable = castToCompilable(newEngine(ENGINE_NAME));
+        return compilable.compile(script);
     }
 
-    public NashornExecutionTask compile(String script) throws ScriptException {
-        CompiledScript compiledScript = compilable.compile(script);
-        return new NashornExecutionTask(compiledScript);
+    public CompiledScript compile(Reader reader) throws ScriptException {
+        Compilable compilable = castToCompilable(newEngine(ENGINE_NAME));
+        return compilable.compile(reader);
     }
 
-    public NashornExecutionTask compile(Reader reader) throws ScriptException {
-        CompiledScript compiledScript = compilable.compile(reader);
-        return new NashornExecutionTask(compiledScript);
+    private ScriptEngine newEngine(String engineName) {
+        return new ScriptEngineManager().getEngineByName(engineName);
+    }
+
+    private Compilable castToCompilable(ScriptEngine engine) {
+        return (Compilable) engine;
     }
 
 }

@@ -1,7 +1,5 @@
 package org.nashorn.server;
 
-import org.nashorn.server.command.Command;
-
 public class ClassMetadata {
 
     private final Class<?> commandClass;

@@ -27,7 +27,7 @@ public class ApiVersionFilter  implements Filter {
 
     private final Set<String> allowedApiVersions = new HashSet<>();
 
-    private final Pattern pattern = Pattern.compile("/\\w*/v(?<api>\\d{1}\\p{Punct}\\d{1})/\\w*");
+    private final Pattern pattern = Pattern.compile("/\\w*/\\w*/v(?<api>\\d{1}\\p{Punct}\\d{1})/\\w*");
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {

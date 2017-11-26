@@ -2,7 +2,6 @@ package org.nashorn.server;
 
 import com.rabbitmq.client.ConnectionFactory;
 import org.apache.log4j.Logger;
-import org.nashorn.server.intercom.CommandResolver;
 
 import javax.naming.NamingException;
 import javax.servlet.ServletContext;
@@ -26,16 +25,13 @@ public class ContextListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent servletContextEvent) {
 
         LOGGER.info("Context initialized.");
+	System.out.println(System.getProperty("java.class.path"));
 
         ServletContext context = servletContextEvent.getServletContext();
 
         /*
             Set up a factory and ship it to the servlet
          */
-        ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost("localhost");
-
-        context.setAttribute("RABBITMQ_FACTORY", factory);
 
 
         /*LOGGER.info("Getting CommandResolverExecutor from JNDI");
@@ -94,12 +90,6 @@ public class ContextListener implements ServletContextListener {
         List<Runnable> runnableList = commandResolverExecutor.shutdownNow();
         LOGGER.debug(runnableList);*/
 
-    }
-
-    private ConnectionFactory initConnectionFactory() {
-        ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost("localhost");
-        return factory;
     }
 
     private ExecutorService getExecutorFromJNDI(String contextName) {

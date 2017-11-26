@@ -22,7 +22,7 @@ public class ApiTypeFilter implements Filter {
 
     private static final Logger LOGGER = Logger.getLogger(ApiTypeFilter.class);
 
-    private final Pattern pattern = Pattern.compile("/\\w*/v\\d{1}\\p{Punct}\\d{1}/(?<type>async|block)");
+    private final Pattern pattern = Pattern.compile("/\\w*/(?<type>async|block)/v\\d{1}\\p{Punct}\\d{1}/\\w*");
 
 
     @Override
@@ -31,6 +31,7 @@ public class ApiTypeFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
+	System.out.println("API_TYPE_FILTER");
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String uri = httpRequest.getRequestURI();
 

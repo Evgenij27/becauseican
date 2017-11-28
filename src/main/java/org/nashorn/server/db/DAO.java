@@ -1,14 +1,15 @@
 package org.nashorn.server.db;
 
-import java.util.concurrent.Future;
+
+import org.nashorn.server.core.ExecutionUnit;
 
 public interface DAO {
 
-   /* long create(Future<Result> result);
+    long create(ExecutionUnit e);
 
-    Future<Result> read(long id);
+    ExecutionUnit read(long id);
 
-    void update(long id, Future<Result> result);
+    void update(long id, ExecutionUnit e);
 
-    void delete(long id);*/
+    void delete(long id);
 }

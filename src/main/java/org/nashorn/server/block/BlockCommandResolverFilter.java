@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import org.nashorn.server.Command;
 import org.nashorn.server.CommandResolver;
 import org.nashorn.server.CommandRouter;
+import org.nashorn.server.block.command.GetBlockCommand;
 import org.nashorn.server.block.command.GreetingBlockCommand;
 
 import javax.servlet.*;
@@ -21,14 +22,12 @@ public class BlockCommandResolverFilter implements Filter{
 
     private static final Logger LOGGER = Logger.getLogger(BlockCommandResolverFilter.class);
 
-    private final ScheduledExecutionUnitPool pool = ScheduledExecutionUnitPool.instance();
-
     private final CommandResolver resolver;
 
     {
         CommandRouter router = new CommandRouter("/nashorn/block/v0.9");
-        router.post
-                ("/", new GreetingBlockCommand(pool));
+        router.post("/", new GreetingBlockCommand());
+        router.get("/:id", new GetBlockCommand());
         resolver = new CommandResolver(router.registry());
     }
 

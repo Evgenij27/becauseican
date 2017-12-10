@@ -1,7 +1,6 @@
 package org.nashorn.server.core;
 
 import org.apache.log4j.Logger;
-import org.nashorn.server.Snapshot;
 
 import javax.script.CompiledScript;
 import javax.script.ScriptContext;
@@ -10,31 +9,32 @@ import javax.script.SimpleScriptContext;
 import java.io.StringWriter;
 import java.util.concurrent.*;
 
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ScriptExecutionUnit implements ExecutionUnit {
 
     private static final Logger LOGGER = Logger.getLogger(ScriptExecutionUnit.class);
 
-    private static final AtomicLong COUNTER = new AtomicLong(1);
-
-    private final long id;
-
     private final StringWriter resultWriter = new StringWriter();
     private final StringWriter errorWriter = new StringWriter();
+
+    private final AtomicBoolean finishedExceptionally = new AtomicBoolean();
+
+    private volatile Throwable cause;
 
     private volatile Future<?> future;
 
     public ScriptExecutionUnit(CompiledScript script, ExecutorService executor) {
-        this.id  = COUNTER.getAndIncrement();
         this.future = evalAsync(script, executor);
     }
 
     private Future<?> evalAsync(CompiledScript script, ExecutorService executor) {
         return executor.submit(() -> {
             try {
+                LOGGER.info("EVAL SCRIPT");
                 script.eval(buildContext());
             } catch (ScriptException ex) {
+                processException(ex);
                 LOGGER.error(ex);
             }
         });
@@ -47,9 +47,12 @@ public class ScriptExecutionUnit implements ExecutionUnit {
         return context;
     }
 
-    @Override
-    public long getId() {
-        return this.id;
+    private void processException(Exception ex) {
+        synchronized (this) {
+            errorWriter.append(ex.getMessage());
+            finishedExceptionally.set(true);
+            cause = ex;
+        }
     }
 
     @Override
@@ -58,35 +61,28 @@ public class ScriptExecutionUnit implements ExecutionUnit {
     }
 
     @Override
+    public boolean finishedExceptionally() {
+        return finishedExceptionally.get();
+    }
+
+    @Override
+    public Throwable getCause() {
+        return cause;
+    }
+
+    @Override
     public void cancel(boolean mayInterupIfRunning) {
         future.cancel(mayInterupIfRunning);
     }
 
     @Override
-    public Snapshot takeSnapshot() {
-        return Snapshot.newSnapshot(resultWriter.getBuffer());
+    public String getResultOutput() {
+        return resultWriter.getBuffer().toString();
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        ScriptExecutionUnit that = (ScriptExecutionUnit) o;
-
-        return id == that.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return (int) (id ^ (id >>> 32));
-    }
-
-    @Override
-    public String toString() {
-        return "ScheduledExecutionUnit{" +
-                ", id=" + id +
-                '}';
+    public String getErrorOutput() {
+        return errorWriter.getBuffer().toString();
     }
 }
 

@@ -1,4 +1,4 @@
-package org.nashorn.server.async.command;
+package org.nashorn.server.block.command;
 
 import org.nashorn.server.AppException;
 import org.nashorn.server.Command;
@@ -9,18 +9,26 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-public class GreetingAsyncCommand implements Command {
+public class TestBlockCommand implements Command {
 
     @Override
     public void execute(HttpServletRequest req, HttpServletResponse resp)
             throws AppException {
-        String name = (String) req.getAttribute("name");
+
         try (final PrintWriter writer = resp.getWriter()) {
-            if (writer.checkError()) throw new IOException("Client disconnection");
-            writer.printf("Hello, %s\n", name);
+            for (int i = 0; i < 20; i++) {
+                if (writer.checkError()) {
+                    throw new IOException("Client disconnected");
+                }
+                writer.printf("%4d\n", i);
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new AppException(e);
+                }
+            }
         } catch (IOException ex) {
             throw new AppException(ex);
         }
-
     }
 }

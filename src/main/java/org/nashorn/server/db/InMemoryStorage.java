@@ -4,8 +4,11 @@ package org.nashorn.server.db;
 import org.nashorn.server.core.ExecutionUnit;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class InMemoryStorage implements DAO {
+
+    private final AtomicLong counter = new AtomicLong();
 
     private final ConcurrentHashMap<Long, ExecutionUnit> storage = new ConcurrentHashMap<>();
 
@@ -21,7 +24,7 @@ public class InMemoryStorage implements DAO {
 
     @Override
     public long create(ExecutionUnit e) {
-        long id = e.getId();
+        long id = counter.incrementAndGet();
         storage.put(id, e);
         return id;
     }

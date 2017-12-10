@@ -5,16 +5,27 @@ import org.apache.log4j.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.regex.*;
 
 public class CommandResolver {
 
     private final Logger logger = Logger.getLogger(CommandResolver.class);
 
-    private final Registry registry;
+    private final ConcurrentSkipListMap<String, Command> getEndpoints;
+    private final ConcurrentSkipListMap<String, Command> postEndpoints;
+    private final ConcurrentSkipListMap<String, Command> putEndpoints;
+    private final ConcurrentSkipListMap<String, Command> deleteEndpoints;
 
-    public CommandResolver(Registry registry) {
-        this.registry = registry;
+    public CommandResolver(ConcurrentSkipListMap<String, Command> getEndpoints,
+                           ConcurrentSkipListMap<String, Command> postEndpoints,
+                           ConcurrentSkipListMap<String, Command> putEndpoints,
+                           ConcurrentSkipListMap<String, Command> deleteEndpoints) {
+        this.getEndpoints = new ConcurrentSkipListMap<>(getEndpoints);
+        this.postEndpoints = new ConcurrentSkipListMap<>(postEndpoints);
+        this.putEndpoints = new ConcurrentSkipListMap<>(putEndpoints);
+        this.deleteEndpoints = new ConcurrentSkipListMap<>(deleteEndpoints);
+
     }
 
     public Command resolve(HttpServletRequest request) throws ServletException {
@@ -64,21 +75,20 @@ public class CommandResolver {
 
     private Map<String, Command> getCommandByMethod(String methodName) {
         Map<String, Command> r = null;
-
         if (methodName.equals("GET")) {
-            r = registry.getRegistry();
+            r = getEndpoints;
         }
 
         if (methodName.equals("POST")) {
-            r = registry.postRegistry();
+            r = postEndpoints;
         }
 
         if (methodName.equals("PUT")) {
-            r = registry.putRegistry();
+            r = putEndpoints;
         }
 
         if (methodName.equals("DELETE")) {
-            r = registry.deleteRegistry();
+            r = deleteEndpoints;
         }
         return r;
     }

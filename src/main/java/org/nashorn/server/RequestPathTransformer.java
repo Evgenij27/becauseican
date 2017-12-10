@@ -13,10 +13,21 @@ public class RequestPathTransformer implements PathTransformer {
     private static final String TEMPLATE_REPLACEMENT = "(?<%s>[^/]+)";
     private static final String END_TEMPLATE = "(/)?";
 
+    private final String rootPath;
+
+    public RequestPathTransformer(String rootPath) {
+        this.rootPath = rootPath;
+    }
+
+    public RequestPathTransformer() {
+        this("");
+    }
+
     @Override
     public String transform(String template) {
+        logger.info("Start transformation");
         Pattern pattern = Pattern.compile(TEMPLATE_VAR);
-        Matcher matcher = pattern.matcher(template);
+        Matcher matcher = pattern.matcher(rootPath + template);
         StringBuffer sb = new StringBuffer();
 
         while (matcher.find()) {

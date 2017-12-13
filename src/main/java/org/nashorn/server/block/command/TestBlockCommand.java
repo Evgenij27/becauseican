@@ -13,7 +13,7 @@ public class TestBlockCommand implements Command {
 
     @Override
     public void execute(HttpServletRequest req, HttpServletResponse resp)
-            throws AppException {
+            throws IOException, ServletException {
 
         try (final PrintWriter writer = resp.getWriter()) {
             for (int i = 0; i < 20; i++) {
@@ -24,11 +24,11 @@ public class TestBlockCommand implements Command {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
-                    throw new AppException(e);
+                    throw new ServletException(e);
                 }
             }
         } catch (IOException ex) {
-            throw new AppException(ex);
+            throw new ServletException(ex);
         }
     }
 }

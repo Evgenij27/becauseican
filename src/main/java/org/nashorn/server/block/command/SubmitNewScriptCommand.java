@@ -22,14 +22,14 @@ public class SubmitNewScriptCommand implements Command {
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Override
-    public void execute(HttpServletRequest req, HttpServletResponse resp) throws AppException {
+    public void execute(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         logger.info("Greeting command");
 
         String script = null;
         try {
             script = getScriptEntity(req).getScript();
         } catch (IOException ex) {
-           throw new AppException(ex);
+           throw new ServletException(ex);
         }
 
         NashornScriptCompiler compiler = new NashornScriptCompiler();
@@ -38,7 +38,7 @@ public class SubmitNewScriptCommand implements Command {
         try {
             compiledScript = compiler.compile(script);
         } catch (ScriptException ex) {
-            throw new AppException(ex);
+            throw new ServletException(ex);
         }
 
         ExecutionUnit unit = ExecutionUnitPool.instance().evalAsync(compiledScript);
@@ -63,8 +63,8 @@ public class SubmitNewScriptCommand implements Command {
 
             logger.info("WRITTING FINISHED");
 
-        } catch (IOException | ServletException ex) {
-            throw new AppException(ex);
+        } catch (IOException ex) {
+            throw new ServletException(ex);
         }
     }
 

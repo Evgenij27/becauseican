@@ -5,6 +5,7 @@ import org.apache.log4j.*;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 public class ApiHandler implements Handler {
@@ -23,13 +24,9 @@ public class ApiHandler implements Handler {
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response)
-            throws AppException {
+            throws IOException, ServletException {
         Command command = null;
-        try {
-           command = resolver.resolve(request);
-        } catch (ServletException ex) {
-            throw new AppException(ex);
-        }
+        command = resolver.resolve(request);
         command.execute(request, response);
     }
 
@@ -55,7 +52,7 @@ public class ApiHandler implements Handler {
     @Override
     public int compareTo(Handler o) {
         ApiHandler ah = (ApiHandler) o;
-        return this.rootPath.compareTo(ah.rootPath);
+        return ah.rootPath.compareTo(this.rootPath);
     }
 
     public static class Builder {

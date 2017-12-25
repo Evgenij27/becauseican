@@ -15,17 +15,15 @@ import org.nashorn.server.core.ExecutionUnit;
 import org.nashorn.server.core.ExecutionUnitPool;
 import org.nashorn.server.core.NashornScriptCompiler;
 
-public class SubmitNewScriptCommand implements Command {
+public class SubmitNewScriptBlockCommand implements Command {
 
-    private final static Logger logger = Logger.getLogger(SubmitNewScriptCommand.class);
-
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final static Logger logger = Logger.getLogger(SubmitNewScriptBlockCommand.class);
 
     @Override
     public void execute(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         logger.info("Greeting command");
 
-        String script = null;
+        String script;
         try {
             script = getScriptEntity(req).getScript();
         } catch (IOException ex) {
@@ -51,13 +49,8 @@ public class SubmitNewScriptCommand implements Command {
             do {
                 sleep(1000);
                 checkWriter(writer);
-                if (unit.finishedExceptionally()) {
-                    logger.info("SEND ERROR RESPONSE");
-                    writer.write(sendErrorResponse(unit));
-                } else {
-                    logger.info("SEND SUCCESS RESPONSE");
-                    writer.write(sendSuccessResponse(unit));
-                }
+                String jsonResponse = ScriptResponseFactory.newJsonResponseFor(unit);
+                writer.write(jsonResponse);
                 logger.info("Unit is Done? " + unit.isDone());
             } while ((!unit.isDone()));
 
@@ -83,30 +76,5 @@ public class SubmitNewScriptCommand implements Command {
     private ScriptEntity getScriptEntity(HttpServletRequest req) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.readValue(req.getReader(), ScriptEntity.class);
-    }
-
-    private String sendSuccessResponse(ExecutionUnit unit) throws IOException {
-        String result = unit.getResultOutput();
-        logger.info(result);
-        ScriptResponse resp = new ScriptResponse(HttpServletResponse.SC_OK,
-                StatusNames.SUCCESS.name().toLowerCase(), result);
-        return convertToJson(resp);
-    }
-
-    private String sendErrorResponse(ExecutionUnit unit) throws IOException {
-        String error = unit.getErrorOutput();
-        logger.info(error);
-        String[] splittedString = error.split(":");
-
-        String errorCause = splittedString[0].trim();
-        String errorMessage = splittedString[1].trim();
-
-        ScriptResponse resp = new ErrorScriptResponse(HttpServletResponse.SC_BAD_REQUEST,
-                StatusNames.ERROR.name().toLowerCase(), errorCause, errorMessage);
-        return convertToJson(resp);
-    }
-
-    private String convertToJson(Object value) throws IOException {
-            return mapper.writeValueAsString(value);
     }
 }

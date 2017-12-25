@@ -25,8 +25,10 @@ public class ApiHandler implements Handler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
-        Command command = null;
-        command = resolver.resolve(request);
+        Command command = resolver.resolve(request);
+        if (command == null) {
+            throw new ServletException("Command not found");
+        }
         command.execute(request, response);
     }
 

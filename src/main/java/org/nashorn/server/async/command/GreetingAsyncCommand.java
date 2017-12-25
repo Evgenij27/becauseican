@@ -1,6 +1,5 @@
 package org.nashorn.server.async.command;
 
-import org.nashorn.server.AppException;
 import org.nashorn.server.Command;
 
 import javax.servlet.ServletException;

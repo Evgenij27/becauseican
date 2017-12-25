@@ -1,19 +1,19 @@
 package org.nashorn.server;
 
+import org.nashorn.server.core.ExecutionUnit;
+
 public class ScriptResponse {
 
-    private final int code;
     private final String status;
     private final String data;
+    private final boolean hasError;
+    private final boolean isFinished;
 
-    public ScriptResponse(int code, String status, String data) {
-        this.code = code;
+    public ScriptResponse(String status, String data, boolean hasError, boolean isFinished) {
         this.status = status;
         this.data = data;
-    }
-
-    public int getCode() {
-        return code;
+        this.hasError = hasError;
+        this.isFinished = isFinished;
     }
 
     public String getStatus() {
@@ -22,5 +22,13 @@ public class ScriptResponse {
 
     public String getData() {
         return data;
+    }
+
+    public boolean isHasError() {
+        return hasError;
+    }
+
+    public boolean isFinished() {
+        return isFinished;
     }
 }

@@ -30,16 +30,14 @@ public class ApiEntrypointServlet extends HttpServlet {
         /*
             Block API Handler and its Commands
          */
-        ApiHandler.Builder blockBuilder = new ApiHandler.Builder("/nashorn/api/v0.9/block");
+        final ApiHandler.Builder blockBuilder = new ApiHandler.Builder("/nashorn/api/v0.9/block");
         blockBuilder.registerGetEndpoint("/test", new TestBlockCommand());
         blockBuilder.registerPostEndpoint("/script", new SubmitNewScriptBlockCommand());
-
-        ApiHandler blockApiHandler = blockBuilder.build();
 
         /*
             Async API Handler and its Commands
          */
-        ApiHandler.Builder asyncBuilder = new ApiHandler.Builder("/nashorn/api/v0.9/async");
+        final ApiHandler.Builder asyncBuilder = new ApiHandler.Builder("/nashorn/api/v0.9/async");
         /*
             GET Endpoints
          */
@@ -50,34 +48,20 @@ public class ApiEntrypointServlet extends HttpServlet {
          */
         asyncBuilder.registerPostEndpoint("/script", new SubmitNewScriptAsyncCommand());
 
-        ApiHandler asyncApiHandler = asyncBuilder.build();
-
-        lookup.registerHandler(blockApiHandler);
-        lookup.registerHandler(asyncApiHandler);
+        lookup.registerHandler(blockBuilder.build());
+        lookup.registerHandler(asyncBuilder.build());
     }
-
-    @Override
-    public void init(ServletConfig config) throws ServletException {}
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         LOGGER.info("SERVICE");
+
+        resp.setHeader("Access-Control-Allow-Origin", "*");
+        resp.setCharacterEncoding("UTF-8");
+        resp.setContentType("application/json");
+
         final AsyncContext context = req.startAsync();
-
-        context.addListener(new AsyncListener() {
-            @Override
-            public void onComplete(AsyncEvent event) throws IOException {}
-
-            @Override
-            public void onTimeout(AsyncEvent event) throws IOException {}
-
-            @Override
-            public void onError(AsyncEvent event) throws IOException {}
-
-            @Override
-            public void onStartAsync(AsyncEvent event) throws IOException {}
-        });
 
         context.start(() -> {
             try {
@@ -94,5 +78,7 @@ public class ApiEntrypointServlet extends HttpServlet {
             context.complete();
         });
         LOGGER.info("END SERVICE");
+
+
     }
 }

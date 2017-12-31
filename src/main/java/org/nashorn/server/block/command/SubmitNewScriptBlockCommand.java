@@ -21,7 +21,6 @@ public class SubmitNewScriptBlockCommand implements Command {
 
     @Override
     public void execute(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
-        logger.info("Greeting command");
 
         String script;
         try {
@@ -40,9 +39,6 @@ public class SubmitNewScriptBlockCommand implements Command {
         }
 
         ExecutionUnit unit = ExecutionUnitPool.instance().evalAsync(compiledScript);
-
-        resp.setCharacterEncoding("UTF-8");
-        resp.setContentType("application/json");
 
         try (final PrintWriter writer = resp.getWriter()) {
 
@@ -63,7 +59,7 @@ public class SubmitNewScriptBlockCommand implements Command {
 
     private void sleep(long millis) throws ServletException {
         try {
-            Thread.sleep(1000);
+            Thread.sleep(millis);
         } catch (InterruptedException e) {
             throw new ServletException(e);
         }

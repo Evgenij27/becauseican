@@ -1,6 +1,6 @@
 package org.nashorn.server;
 
-import com.rabbitmq.client.ConnectionFactory;
+import javax.servlet.ServletContextEvent;
 import org.apache.log4j.Logger;
 
 import javax.naming.NamingException;

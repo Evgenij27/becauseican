@@ -21,6 +21,7 @@ public class InMemoryStorage implements DAO {
     }
 
     private static class Holder {
+        private Holder() {}
         private static final InMemoryStorage INSTANCE = new InMemoryStorage();
     }
 

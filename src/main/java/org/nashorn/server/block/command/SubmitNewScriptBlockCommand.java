@@ -61,6 +61,7 @@ public class SubmitNewScriptBlockCommand implements Command {
         try {
             Thread.sleep(millis);
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new ServletException(e);
         }
     }

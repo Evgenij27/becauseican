@@ -24,6 +24,7 @@ public class TestBlockCommand implements Command {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                     throw new ServletException(e);
                 }
             }

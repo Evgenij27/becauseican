@@ -17,7 +17,7 @@ import org.nashorn.server.core.NashornScriptCompiler;
 
 public class SubmitNewScriptBlockCommand implements Command {
 
-    private final static Logger logger = Logger.getLogger(SubmitNewScriptBlockCommand.class);
+    private static final  Logger logger = Logger.getLogger(SubmitNewScriptBlockCommand.class);
 
     @Override
     public void execute(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {

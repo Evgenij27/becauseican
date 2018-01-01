@@ -1,6 +1,5 @@
 package org.nashorn.server.block.command;
 
-import org.nashorn.server.AppException;
 import org.nashorn.server.Command;
 
 import javax.servlet.ServletException;
@@ -20,16 +19,20 @@ public class TestBlockCommand implements Command {
                 if (writer.checkError()) {
                     throw new IOException("Client disconnected");
                 }
-                writer.printf("%4d\n", i);
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    throw new ServletException(e);
-                }
+                writer.printf("%4d%n", i);
+                sleep(1000);
             }
         } catch (IOException ex) {
             throw new ServletException(ex);
+        }
+    }
+
+    private void sleep(long millis) throws ServletException {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new ServletException(e);
         }
     }
 }

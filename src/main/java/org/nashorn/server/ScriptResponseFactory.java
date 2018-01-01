@@ -9,6 +9,10 @@ public class ScriptResponseFactory {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
+    private ScriptResponseFactory() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static String newJsonResponseFor(ExecutionUnit unit) throws IOException {
         String resp = null;
         if (unit.finishedExceptionally()) {

@@ -1,7 +1,5 @@
 package org.nashorn.server;
 
-import org.nashorn.server.core.ExecutionUnit;
-
 public class ScriptResponse {
 
     private final String status;

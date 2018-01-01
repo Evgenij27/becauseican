@@ -1,10 +1,7 @@
 package org.nashorn.server.async.command;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.nashorn.server.Command;
-import org.nashorn.server.ScriptResponse;
 import org.nashorn.server.ScriptResponseFactory;
-import org.nashorn.server.StatusNames;
 import org.nashorn.server.core.ExecutionUnit;
 import org.nashorn.server.db.InMemoryStorage;
 

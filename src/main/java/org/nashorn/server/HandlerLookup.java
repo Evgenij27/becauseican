@@ -33,7 +33,7 @@ public class HandlerLookup {
 
         LOGGER.info(String.format("Requested URI : %s", uri));
 
-        Optional<Handler> oHandler = handlers.stream().filter((h) -> {
+        Optional<Handler> oHandler = handlers.stream().filter( h -> {
             ApiHandler ah = (ApiHandler) h;
             return pathMatcher(ah.getRootPath(), uri);
         }).findFirst();

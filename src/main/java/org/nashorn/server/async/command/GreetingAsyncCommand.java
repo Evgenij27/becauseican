@@ -16,7 +16,7 @@ public class GreetingAsyncCommand implements Command {
         String name = (String) req.getAttribute("name");
         try (final PrintWriter writer = resp.getWriter()) {
             if (writer.checkError()) throw new IOException("Client disconnection");
-            writer.printf("Hello, %s\n", name);
+            writer.printf("Hello, %s%n", name);
         } catch (IOException ex) {
             throw new ServletException(ex);
         }

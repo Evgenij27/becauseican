@@ -15,6 +15,7 @@ public class ExecutionUnitPool {
     }
 
     private static class Holder {
+        private Holder() {}
         private static final ExecutionUnitPool INSTANCE = new ExecutionUnitPool();
     }
 

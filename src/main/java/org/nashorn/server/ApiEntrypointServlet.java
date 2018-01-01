@@ -18,7 +18,8 @@ import java.io.IOException;
 @WebServlet(
         urlPatterns = {"/api/*"},
         asyncSupported = true,
-        name = "ApiEntrypointServlet"
+        name = "ApiEntrypointServlet",
+        loadOnStartup = 1
 )
 public class ApiEntrypointServlet extends HttpServlet {
 
@@ -26,8 +27,9 @@ public class ApiEntrypointServlet extends HttpServlet {
 
     private final HandlerLookup lookup = new HandlerLookup();
 
-    {
-        /*
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+         /*
             Block API Handler and its Commands
          */
         final ApiHandler.Builder blockBuilder = new ApiHandler.Builder("/nashorn/api/v0.9/block");

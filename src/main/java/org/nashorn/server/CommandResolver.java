@@ -4,23 +4,25 @@ import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.regex.*;
 
 public class CommandResolver {
 
-    private final Logger logger = Logger.getLogger(CommandResolver.class);
+    private static final Logger LOGGER = Logger.getLogger(CommandResolver.class);
 
-    private final ConcurrentSkipListMap<String, Command> getEndpoints;
-    private final ConcurrentSkipListMap<String, Command> postEndpoints;
-    private final ConcurrentSkipListMap<String, Command> putEndpoints;
-    private final ConcurrentSkipListMap<String, Command> deleteEndpoints;
+    private final ConcurrentMap<String, Command> getEndpoints;
+    private final ConcurrentMap<String, Command> postEndpoints;
+    private final ConcurrentMap<String, Command> putEndpoints;
+    private final ConcurrentMap<String, Command> deleteEndpoints;
 
-    public CommandResolver(ConcurrentSkipListMap<String, Command> getEndpoints,
-                           ConcurrentSkipListMap<String, Command> postEndpoints,
-                           ConcurrentSkipListMap<String, Command> putEndpoints,
-                           ConcurrentSkipListMap<String, Command> deleteEndpoints) {
+    public CommandResolver(ConcurrentMap<String, Command> getEndpoints,
+                           ConcurrentMap<String, Command> postEndpoints,
+                           ConcurrentMap<String, Command> putEndpoints,
+                           ConcurrentMap<String, Command> deleteEndpoints) {
         this.getEndpoints = new ConcurrentSkipListMap<>(getEndpoints);
         this.postEndpoints = new ConcurrentSkipListMap<>(postEndpoints);
         this.putEndpoints = new ConcurrentSkipListMap<>(putEndpoints);
@@ -35,17 +37,19 @@ public class CommandResolver {
         Matcher matcher = null;
 
         String uri = request.getRequestURI();
-        System.out.println("URI -> " + uri);
-        logger.info("URI " + uri);
+        LOGGER.info("URI " + uri);
         String methodName = request.getMethod();
-        System.out.println("Method name -> " + methodName);
+        LOGGER.info("Method name -> " + methodName);
 
-        Map<String, Command> comms = getCommandByMethod(methodName);
-        logger.info("COMMANDS " + comms);
-        for (Map.Entry<String, Command> entry : comms.entrySet()) {
+        ConcurrentMap<String, Command> comms = getCommandByMethod(methodName);
+        if (comms == null) {
+            throw new ServletException("No such method");
+        }
+        LOGGER.info("COMMANDS " + comms);
+        for (ConcurrentMap.Entry<String, Command> entry : comms.entrySet()) {
             String template = entry.getKey();
             pattern = Pattern.compile(template);
-            logger.info("TEMPLATE " + template);
+            LOGGER.info("TEMPLATE " + template);
             matcher = pattern.matcher(uri);
             if (matcher.matches()) {
                 for (String groupName : getPathVariables(template)) {
@@ -73,8 +77,8 @@ public class CommandResolver {
         return pathVariables;
     }
 
-    private Map<String, Command> getCommandByMethod(String methodName) {
-        Map<String, Command> r = null;
+    private ConcurrentMap<String, Command> getCommandByMethod(String methodName) {
+        ConcurrentMap<String, Command> r = null;
         if (methodName.equals("GET")) {
             r = getEndpoints;
         }

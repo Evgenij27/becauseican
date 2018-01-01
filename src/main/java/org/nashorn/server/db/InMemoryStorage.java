@@ -2,17 +2,16 @@ package org.nashorn.server.db;
 
 import org.nashorn.server.core.ExecutionUnit;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class InMemoryStorage implements DAO {
 
     private final AtomicLong counter = new AtomicLong();
 
-    private final ConcurrentHashMap<Long, ExecutionUnit> storage = new ConcurrentHashMap<>();
+    private final ConcurrentMap<Long, ExecutionUnit> storage = new ConcurrentHashMap<>();
 
     private InMemoryStorage() {}
 
@@ -48,7 +47,7 @@ public class InMemoryStorage implements DAO {
     }
 
     @Override
-    public Set<Map.Entry<Long, ExecutionUnit>> getAllUnits() {
+    public Set<ConcurrentMap.Entry<Long, ExecutionUnit>> getAllUnits() {
         return storage.entrySet();
     }
 }

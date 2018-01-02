@@ -11,10 +11,10 @@ import java.io.PrintWriter;
 public class TestBlockCommand implements Command {
 
     @Override
-    public void execute(HttpServletRequest req, HttpServletResponse resp)
+    public void execute(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
 
-        try (final PrintWriter writer = resp.getWriter()) {
+        try (final PrintWriter writer = response.getWriter()) {
             for (int i = 0; i < 20; i++) {
                 if (writer.checkError()) {
                     throw new IOException("Client disconnected");

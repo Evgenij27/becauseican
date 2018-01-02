@@ -17,7 +17,6 @@ import java.io.IOException;
 
 @WebServlet(
         urlPatterns = {"/api/*"},
-        asyncSupported = true,
         name = "ApiEntrypointServlet",
         loadOnStartup = 1
 )
@@ -57,30 +56,23 @@ public class ApiEntrypointServlet extends HttpServlet {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        LOGGER.info("SERVICE");
+        LOGGER.info("START SERVICE");
 
         resp.setHeader("Access-Control-Allow-Origin", "*");
         resp.setCharacterEncoding("UTF-8");
         resp.setContentType("application/json");
 
-        final AsyncContext context = req.startAsync();
-
-        context.start(() -> {
-            try {
-                lookup.lookupAndProcess(req, resp);
-            } catch (ServletException ex) {
-                LOGGER.error(ex);
-                HttpServletResponse httpResp = (HttpServletResponse) context.getResponse();
-                httpResp.setStatus(400);
-            } catch (IOException ex) {
-                LOGGER.error(ex);
-                HttpServletResponse httpResp = (HttpServletResponse) context.getResponse();
-                httpResp.setStatus(500);
-            }
-            context.complete();
-        });
+        try {
+            lookup.lookupAndProcess(req, resp);
+        } catch (ServletException ex) {
+            LOGGER.error(ex);
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        } catch (IOException ex) {
+            LOGGER.error(ex);
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
         LOGGER.info("END SERVICE");
-
-
     }
+
 }
+

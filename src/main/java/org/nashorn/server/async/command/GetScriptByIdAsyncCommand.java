@@ -1,6 +1,8 @@
 package org.nashorn.server.async.command;
 
+import org.apache.log4j.Logger;
 import org.nashorn.server.Command;
+import org.nashorn.server.PathVariableSupplier;
 import org.nashorn.server.ScriptResponseFactory;
 import org.nashorn.server.core.ExecutionUnit;
 import org.nashorn.server.db.InMemoryStorage;
@@ -13,24 +15,23 @@ import java.io.PrintWriter;
 
 public class GetScriptByIdAsyncCommand implements Command {
 
+    private static final Logger LOGGER = Logger.getLogger(GetScriptByIdAsyncCommand.class);
+
     @Override
-    public void execute(HttpServletRequest req, HttpServletResponse resp)
+    public void execute(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
 
-        String attr = (String) req.getAttribute("id");
+        PathVariableSupplier pvs = new PathVariableSupplier(request);
 
-        if (attr == null) {
-            throw new ServletException("Bad request");
-        }
-
-        long id = Long.parseLong(attr);
+        long id = pvs.supplyAsLong("id");
 
         ExecutionUnit unit = InMemoryStorage.instance().read(id);
 
         String bresp = ScriptResponseFactory.newJsonResponseFor(unit);
 
-        try (final PrintWriter writer = resp.getWriter()) {
+        try (final PrintWriter writer = response.getWriter()) {
             if (writer.checkError()) {
+                LOGGER.error("Client disconnected");
                 throw new IOException("Client disconnected");
             }
             writer.print(bresp);

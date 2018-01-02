@@ -14,16 +14,17 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.Reader;
 
 public class SubmitNewScriptAsyncCommand implements Command {
 
     @Override
-    public void execute(HttpServletRequest req, HttpServletResponse resp)
+    public void execute(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
 
         String script = null;
         try {
-            script = getScriptEntity(req).getScript();
+            script = getScriptEntity(request.getReader()).getScript();
         } catch (IOException ex) {
             throw new ServletException(ex);
         }
@@ -41,16 +42,16 @@ public class SubmitNewScriptAsyncCommand implements Command {
 
         long id = InMemoryStorage.instance().create(unit);
 
-        resp.setStatus(HttpServletResponse.SC_CREATED);
-        resp.setHeader("Location", createLocation(id, req));
+        response.setStatus(HttpServletResponse.SC_CREATED);
+        response.setHeader("Location", createLocation(id, request.getRequestURL()));
     }
 
-    private ScriptEntity getScriptEntity(HttpServletRequest req) throws IOException {
+    private ScriptEntity getScriptEntity(Reader reader) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        return mapper.readValue(req.getReader(), ScriptEntity.class);
+        return mapper.readValue(reader, ScriptEntity.class);
     }
 
-    private String createLocation(long id, HttpServletRequest req) {
-        return String.format("%s/%d", req.getRequestURL().toString(), id);
+    private String createLocation(long id, StringBuffer url) {
+        return url.append("/").append(id).toString();
     }
 }

@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Reader;
 
 import org.apache.log4j.Logger;
 import org.nashorn.server.*;
@@ -20,28 +21,41 @@ public class SubmitNewScriptBlockCommand implements Command {
     private static final  Logger logger = Logger.getLogger(SubmitNewScriptBlockCommand.class);
 
     @Override
-    public void execute(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+    public void execute(HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException {
 
+        String script = getScriptFromRequest(request.getReader());
+
+        CompiledScript compiledScript = compiledScript(script);
+
+        ExecutionUnit unit = ExecutionUnitPool.instance().evalAsync(compiledScript);
+
+        writeResponseIfScriptRunning(unit, response);
+    }
+
+    private String getScriptFromRequest(Reader reader) throws ServletException {
         String script;
         try {
-            script = getScriptEntity(req).getScript();
+            script = getScriptEntity(reader).getScript();
         } catch (IOException ex) {
-           throw new ServletException(ex);
+            throw new ServletException(ex);
         }
+        return script;
+    }
 
+    private CompiledScript compiledScript(String script) throws ServletException {
         NashornScriptCompiler compiler = new NashornScriptCompiler();
-
         CompiledScript compiledScript;
         try {
             compiledScript = compiler.compile(script);
         } catch (ScriptException ex) {
             throw new ServletException(ex);
         }
+        return compiledScript;
+    }
 
-        ExecutionUnit unit = ExecutionUnitPool.instance().evalAsync(compiledScript);
-
-        try (final PrintWriter writer = resp.getWriter()) {
-
+    private void writeResponseIfScriptRunning(ExecutionUnit unit, HttpServletResponse response) throws ServletException {
+        try (final PrintWriter writer = response.getWriter()) {
             do {
                 sleep(1000);
                 checkWriter(writer);
@@ -49,9 +63,7 @@ public class SubmitNewScriptBlockCommand implements Command {
                 writer.write(jsonResponse);
                 logger.info("Unit is Done? " + unit.isDone());
             } while ((!unit.isDone()));
-
             logger.info("WRITTING FINISHED");
-
         } catch (IOException ex) {
             throw new ServletException(ex);
         }
@@ -70,8 +82,8 @@ public class SubmitNewScriptBlockCommand implements Command {
         if (writer.checkError()) throw new IOException("Client disconnected");
     }
 
-    private ScriptEntity getScriptEntity(HttpServletRequest req) throws IOException {
+    private ScriptEntity getScriptEntity(Reader reader) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        return mapper.readValue(req.getReader(), ScriptEntity.class);
+        return mapper.readValue(reader, ScriptEntity.class);
     }
 }

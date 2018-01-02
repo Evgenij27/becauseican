@@ -27,7 +27,7 @@ public class GetScriptByIdAsyncCommand implements Command {
 
         ExecutionUnit unit = InMemoryStorage.instance().read(id);
 
-        String bresp = ScriptResponseFactory.newJsonResponseFor(unit);
+        String bresp = ScriptResponseFactory.newJsonResponseFor(unit, request, response);
 
         try (final PrintWriter writer = response.getWriter()) {
             if (writer.checkError()) {

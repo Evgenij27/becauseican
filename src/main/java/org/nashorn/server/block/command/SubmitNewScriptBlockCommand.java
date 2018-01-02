@@ -30,7 +30,18 @@ public class SubmitNewScriptBlockCommand implements Command {
 
         ExecutionUnit unit = ExecutionUnitPool.instance().evalAsync(compiledScript);
 
-        writeResponseIfScriptRunning(unit, response);
+        try (final PrintWriter writer = response.getWriter()) {
+            do {
+                sleep(1000);
+                checkWriter(writer);
+                String jsonResponse = ScriptResponseFactory.newJsonResponseFor(unit, request, response);
+                writer.write(jsonResponse);
+                logger.info("Unit is Done? " + unit.isDone());
+            } while ((!unit.isDone()));
+            logger.info("WRITTING FINISHED");
+        } catch (IOException ex) {
+            throw new ServletException(ex);
+        }
     }
 
     private String getScriptFromRequest(Reader reader) throws ServletException {
@@ -52,21 +63,6 @@ public class SubmitNewScriptBlockCommand implements Command {
             throw new ServletException(ex);
         }
         return compiledScript;
-    }
-
-    private void writeResponseIfScriptRunning(ExecutionUnit unit, HttpServletResponse response) throws ServletException {
-        try (final PrintWriter writer = response.getWriter()) {
-            do {
-                sleep(1000);
-                checkWriter(writer);
-                String jsonResponse = ScriptResponseFactory.newJsonResponseFor(unit);
-                writer.write(jsonResponse);
-                logger.info("Unit is Done? " + unit.isDone());
-            } while ((!unit.isDone()));
-            logger.info("WRITTING FINISHED");
-        } catch (IOException ex) {
-            throw new ServletException(ex);
-        }
     }
 
     private void sleep(long millis) throws ServletException {

@@ -1,5 +1,9 @@
 package org.nashorn.server;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+@JsonInclude(Include.NON_NULL)
 public class ErrorData {
 
     private final String cause;
@@ -15,8 +19,8 @@ public class ErrorData {
             this.cause = splittedMessage[0].trim();
             this.message = splittedMessage[1].trim();
         } else {
-            this.cause = "";
-            this.message = "";
+            this.cause = null;
+            this.message = null;
         }
     }
 

@@ -34,8 +34,29 @@ public class SubmitNewScriptBlockCommand implements Command {
             do {
                 sleep(1000);
                 checkWriter(writer);
-                String jsonResponse = ScriptResponseFactory.newJsonResponseFor(unit, request, response);
-                writer.write(jsonResponse);
+
+                ScriptResponse.Builder builder = new ScriptResponse.Builder();
+                if (unit.finishedExceptionally()) {
+                    builder.exceptionally(unit.getCause());
+                    builder.setData(unit.getErrorOutput());
+                    builder.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+                    builder.isFinished(true);
+                    for (String name : response.getHeaderNames()) {
+                        builder.setHeader(name, response.getHeader(name));
+                    }
+                } else {
+                    builder.setStatus(HttpServletResponse.SC_OK);
+                    builder.isFinished(unit.isDone());
+                    for (String name : response.getHeaderNames()) {
+                        builder.setHeader(name, response.getHeader(name));
+                    }
+                    builder.setData(unit.getResultOutput());
+                }
+
+                ObjectMapper mapper = new ObjectMapper();
+                String jsonResp = mapper.writeValueAsString(builder.build());
+                writer.write(jsonResp);
+                
                 logger.info("Unit is Done? " + unit.isDone());
             } while ((!unit.isDone()));
             logger.info("WRITTING FINISHED");

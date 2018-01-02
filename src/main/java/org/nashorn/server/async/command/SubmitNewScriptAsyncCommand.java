@@ -1,8 +1,10 @@
 package org.nashorn.server.async.command;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.log4j.Logger;
 import org.nashorn.server.Command;
 import org.nashorn.server.ScriptEntity;
+import org.nashorn.server.ScriptResponse;
 import org.nashorn.server.core.ExecutionUnit;
 import org.nashorn.server.core.ExecutionUnitPool;
 import org.nashorn.server.core.NashornScriptCompiler;
@@ -14,9 +16,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Reader;
 
 public class SubmitNewScriptAsyncCommand implements Command {
+
+    private static final Logger LOGGER = Logger.getLogger(SubmitNewScriptAsyncCommand.class);
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response)
@@ -44,6 +49,26 @@ public class SubmitNewScriptAsyncCommand implements Command {
 
         response.setStatus(HttpServletResponse.SC_CREATED);
         response.setHeader("Location", createLocation(id, request.getRequestURL()));
+
+        ScriptResponse.Builder builder = new ScriptResponse.Builder();
+        builder.setStatus(HttpServletResponse.SC_CREATED);
+        for (String name : response.getHeaderNames()) {
+            builder.setHeader(name, response.getHeader(name));
+        }
+
+        ScriptResponse sr = builder.build();
+        ObjectMapper mapper = new ObjectMapper();
+        String bresp = mapper.writeValueAsString(sr);
+
+        try (final PrintWriter writer = response.getWriter()) {
+            if (writer.checkError()) {
+                LOGGER.error("Client disconnected");
+                throw new IOException("Client disconnected");
+            }
+            writer.print(bresp);
+        } catch (IOException ex) {
+            throw new ServletException(ex);
+        }
     }
 
     private ScriptEntity getScriptEntity(Reader reader) throws IOException {

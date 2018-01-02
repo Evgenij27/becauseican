@@ -38,7 +38,7 @@ public class ScriptResponse {
         return href;
     }
 
-    public class Builder {
+    public static class Builder {
 
         private int status;
         private Map<String, String> headers = new HashMap<>();

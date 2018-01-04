@@ -1,7 +1,5 @@
 package org.nashorn.server.block.command;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import javax.script.*;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -30,31 +28,23 @@ public class SubmitNewScriptBlockCommand implements Command {
 
         ExecutionUnit unit = ExecutionUnitPool.instance().evalAsync(compiledScript);
 
+        ScriptResponse.Builder builder = new ScriptResponse.Builder();
+
+        builder.copyHeadersFrom(response);
+
         try (final PrintWriter writer = response.getWriter()) {
             do {
                 sleep(1000);
                 checkWriter(writer);
 
-                ScriptResponse.Builder builder = new ScriptResponse.Builder();
-                if (unit.finishedExceptionally()) {
-                    builder.exceptionally(unit.getCause());
-                    builder.setData(unit.getErrorOutput());
-                    builder.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-                    builder.isFinished(true);
-                    for (String name : response.getHeaderNames()) {
-                        builder.setHeader(name, response.getHeader(name));
-                    }
-                } else {
-                    builder.setStatus(HttpServletResponse.SC_OK);
-                    builder.isFinished(unit.isDone());
-                    for (String name : response.getHeaderNames()) {
-                        builder.setHeader(name, response.getHeader(name));
-                    }
-                    builder.setData(unit.getResultOutput());
-                }
+                ScriptContent sc = new ScriptContent.Builder()
+                                .href(new Href.Builder(request.getRequestURL()).build())
+                                .script(unit)
+                                .build();
 
-                ObjectMapper mapper = new ObjectMapper();
-                String jsonResp = mapper.writeValueAsString(builder.build());
+                builder.addContent(sc);
+
+                String jsonResp = JsonSerDesEngine.writeEntity(builder.build());
                 writer.write(jsonResp);
                 
                 logger.info("Unit is Done? " + unit.isDone());
@@ -68,7 +58,7 @@ public class SubmitNewScriptBlockCommand implements Command {
     private String getScriptFromRequest(Reader reader) throws ServletException {
         String script;
         try {
-            script = getScriptEntity(reader).getScript();
+            script = JsonSerDesEngine.readEntity(reader).getScript();
         } catch (IOException ex) {
             throw new ServletException(ex);
         }
@@ -99,8 +89,4 @@ public class SubmitNewScriptBlockCommand implements Command {
         if (writer.checkError()) throw new IOException("Client disconnected");
     }
 
-    private ScriptEntity getScriptEntity(Reader reader) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.readValue(reader, ScriptEntity.class);
-    }
 }

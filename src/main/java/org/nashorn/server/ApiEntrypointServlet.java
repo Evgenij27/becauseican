@@ -1,6 +1,7 @@
 package org.nashorn.server;
 
 import org.apache.log4j.Logger;
+import org.nashorn.server.async.command.GetAllScriptsAsyncCommand;
 import org.nashorn.server.async.command.GetScriptByIdAsyncCommand;
 import org.nashorn.server.async.command.GreetingAsyncCommand;
 import org.nashorn.server.async.command.SubmitNewScriptAsyncCommand;
@@ -29,25 +30,35 @@ public class ApiEntrypointServlet extends HttpServlet {
     @Override
     public void init(ServletConfig config) throws ServletException {
          /*
+         ==========================================================================
             Block API Handler and its Commands
+         ==========================================================================
          */
-        final ApiHandler.Builder blockBuilder = new ApiHandler.Builder("/nashorn/api/v0.9/block");
+        final ApiHandler.Builder blockBuilder =
+                new ApiHandler.Builder("/nashorn/api/v0.9/block");
         blockBuilder.registerGetEndpoint("/test", new TestBlockCommand());
+         /*
+            POST Endpoints
+         */
         blockBuilder.registerPostEndpoint("/script", new SubmitNewScriptBlockCommand());
 
         /*
+        ============================================================================
             Async API Handler and its Commands
+        ============================================================================
          */
-        final ApiHandler.Builder asyncBuilder = new ApiHandler.Builder("/nashorn/api/v0.9/async");
+        final ApiHandler.Builder asyncBuilder =
+                new ApiHandler.Builder("/nashorn/api/v0.9/async");
         /*
             GET Endpoints
          */
         asyncBuilder.registerGetEndpoint("/greetings/:name", new GreetingAsyncCommand());
-        asyncBuilder.registerGetEndpoint("/script/:id", new GetScriptByIdAsyncCommand());
+        asyncBuilder.registerGetEndpoint("/script/:id",      new GetScriptByIdAsyncCommand());
+        asyncBuilder.registerGetEndpoint("/script",          new GetAllScriptsAsyncCommand());
         /*
             POST Endpoints
          */
-        asyncBuilder.registerPostEndpoint("/script", new SubmitNewScriptAsyncCommand());
+        asyncBuilder.registerPostEndpoint("/script",         new SubmitNewScriptAsyncCommand());
 
         lookup.registerHandler(blockBuilder.build());
         lookup.registerHandler(asyncBuilder.build());

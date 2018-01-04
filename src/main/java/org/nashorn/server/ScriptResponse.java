@@ -3,7 +3,10 @@ package org.nashorn.server;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @JsonInclude(Include.NON_NULL)
@@ -11,15 +14,16 @@ public class ScriptResponse {
 
     private final int status;
     private final Map<String, String> headers;
-    private final ScriptContext context;
-    private final Href href;
+    private final List<ScriptContent> content;
 
     private ScriptResponse(Builder b) {
         this.status = b.status;
         this.headers = new HashMap<>(b.headers);
-        this.context =
-                new ScriptContext(b.data, b.hasError, b.isFinished, new ErrorData(b.t));
-        this.href = new Href(b.href);
+        if (b.content != null) {
+            this.content = new ArrayList<>(b.content);
+        } else {
+            this.content = null;
+        }
     }
 
     public int getStatus() {
@@ -30,29 +34,29 @@ public class ScriptResponse {
         return headers;
     }
 
-    public ScriptContext getContext() {
-        return context;
-    }
-
-    public Href getHref() {
-        return href;
+    public List<ScriptContent> getContent() {
+        return content;
     }
 
     public static class Builder {
 
-        private int status;
+        private int status = HttpServletResponse.SC_OK;
         private Map<String, String> headers = new HashMap<>();
 
-        private String data;
-        private boolean hasError;
-        private boolean isFinished;
+        private List<ScriptContent> content = new ArrayList<>();
 
-        private Throwable t;
+        public Builder statusOK() {
+            this.status = HttpServletResponse.SC_OK;
+            return this;
+        }
 
-        private String href;
+        public Builder statusError() {
+            this.status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+            return this;
+        }
 
-        public Builder setStatus(int status) {
-            this.status = status;
+        public Builder statusCreated() {
+            this.status = HttpServletResponse.SC_CREATED;
             return this;
         }
 
@@ -61,24 +65,20 @@ public class ScriptResponse {
             return this;
         }
 
-        public Builder setData(String data) {
-            this.data = data;
+        public Builder copyHeadersFrom(HttpServletResponse resp) {
+            for (String name : resp.getHeaderNames()) {
+                this.headers.put(name, resp.getHeader(name));
+            }
             return this;
         }
 
-        public Builder exceptionally(Throwable t) {
-            this.hasError = true;
-            this.t = t;
+        public Builder addContent(ScriptContent content) {
+            this.content.add(content);
             return this;
         }
 
-        public Builder isFinished(boolean isFinished) {
-            this.isFinished = isFinished;
-            return this;
-        }
-
-        public Builder setHrefSelf(String self) {
-            this.href = self;
+        public Builder noContent() {
+            this.content = null;
             return this;
         }
 

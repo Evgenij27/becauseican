@@ -13,13 +13,17 @@ import org.nashorn.server.*;
 import org.nashorn.server.core.ExecutionUnit;
 import org.nashorn.server.core.ExecutionUnitPool;
 import org.nashorn.server.core.NashornScriptCompiler;
+import org.nashorn.server.util.JsonSerDesEngine;
+import org.nashorn.server.util.response.ScriptContent;
+import org.nashorn.server.util.response.ScriptResponse;
+import org.nashorn.server.util.response.ScriptUnitData;
 
 public class SubmitNewScriptBlockCommand implements Command {
 
     private static final  Logger logger = Logger.getLogger(SubmitNewScriptBlockCommand.class);
 
     @Override
-    public void execute(HttpServletRequest request, HttpServletResponse response)
+    public Object execute(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
 
         String script = getScriptFromRequest(request.getReader());
@@ -37,10 +41,10 @@ public class SubmitNewScriptBlockCommand implements Command {
                 sleep(1000);
                 checkWriter(writer);
 
-                ScriptContent sc = new ScriptContent.Builder()
-                                .href(new Href.Builder(request.getRequestURL()).build())
-                                .script(unit)
-                                .build();
+                ScriptUnitData sud = new ScriptUnitData(unit);
+
+                ScriptContent sc = new ScriptContent();
+                sc.setScript(sud);
 
                 builder.addContent(sc);
 
@@ -53,6 +57,8 @@ public class SubmitNewScriptBlockCommand implements Command {
         } catch (IOException ex) {
             throw new ServletException(ex);
         }
+
+        return null;
     }
 
     private String getScriptFromRequest(Reader reader) throws ServletException {

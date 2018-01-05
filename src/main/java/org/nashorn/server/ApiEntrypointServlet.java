@@ -1,14 +1,16 @@
 package org.nashorn.server;
 
 import org.apache.log4j.Logger;
-import org.nashorn.server.async.command.GetAllScriptsAsyncCommand;
-import org.nashorn.server.async.command.GetScriptByIdAsyncCommand;
-import org.nashorn.server.async.command.GreetingAsyncCommand;
-import org.nashorn.server.async.command.SubmitNewScriptAsyncCommand;
+import org.nashorn.server.async.command.*;
 import org.nashorn.server.block.command.SubmitNewScriptBlockCommand;
 import org.nashorn.server.block.command.TestBlockCommand;
+import org.nashorn.server.handler.HandlerBuilder;
+import org.nashorn.server.handler.HandlerLookup;
+import org.nashorn.server.handler.async.AsyncApiHandler;
+import org.nashorn.server.handler.block.BlockApiHandler;
 
-import javax.servlet.*;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -34,31 +36,36 @@ public class ApiEntrypointServlet extends HttpServlet {
             Block API Handler and its Commands
          ==========================================================================
          */
-        final ApiHandler.Builder blockBuilder =
-                new ApiHandler.Builder("/nashorn/api/v0.9/block");
-        blockBuilder.registerGetEndpoint("/test", new TestBlockCommand());
+        HandlerBuilder blockBuilder = BlockApiHandler.newBuilder("/nashorn/api/v0.9/block");
+        blockBuilder.getEndpoint("/test", new TestBlockCommand());
          /*
             POST Endpoints
          */
-        blockBuilder.registerPostEndpoint("/script", new SubmitNewScriptBlockCommand());
+        blockBuilder.postEndpoint("/script", new SubmitNewScriptBlockCommand());
 
         /*
         ============================================================================
             Async API Handler and its Commands
         ============================================================================
          */
-        final ApiHandler.Builder asyncBuilder =
-                new ApiHandler.Builder("/nashorn/api/v0.9/async");
+        HandlerBuilder asyncBuilder = AsyncApiHandler.newBuilder("/nashorn/api/v0.9/async");
         /*
             GET Endpoints
          */
-        asyncBuilder.registerGetEndpoint("/greetings/:name", new GreetingAsyncCommand());
-        asyncBuilder.registerGetEndpoint("/script/:id",      new GetScriptByIdAsyncCommand());
-        asyncBuilder.registerGetEndpoint("/script",          new GetAllScriptsAsyncCommand());
+        asyncBuilder.getEndpoint("/greetings/:name", new GreetingAsyncCommand());
+        asyncBuilder.getEndpoint("/script/:id",      new GetScriptByIdAsyncCommand());
+        asyncBuilder.getEndpoint("/script",          new GetAllScriptsAsyncCommand());
         /*
             POST Endpoints
          */
-        asyncBuilder.registerPostEndpoint("/script",         new SubmitNewScriptAsyncCommand());
+        asyncBuilder.postEndpoint("/script",         new SubmitNewScriptAsyncCommand());
+
+        /*
+            DELETE Endpoints
+         */
+        asyncBuilder.deleteEndpoint("/script/:id",     new CancelAndDeleteExecutionByIdAsyncCommand());
+
+
 
         lookup.registerHandler(blockBuilder.build());
         lookup.registerHandler(asyncBuilder.build());

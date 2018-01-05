@@ -11,7 +11,7 @@ import java.io.PrintWriter;
 public class TestBlockCommand implements Command {
 
     @Override
-    public void execute(HttpServletRequest request, HttpServletResponse response)
+    public Object execute(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
 
         try (final PrintWriter writer = response.getWriter()) {
@@ -25,6 +25,7 @@ public class TestBlockCommand implements Command {
         } catch (IOException ex) {
             throw new ServletException(ex);
         }
+        return null;
     }
 
     private void sleep(long millis) throws ServletException {

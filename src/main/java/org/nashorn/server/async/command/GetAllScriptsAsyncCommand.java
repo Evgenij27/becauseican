@@ -5,6 +5,8 @@ import org.apache.log4j.Logger;
 import org.nashorn.server.*;
 import org.nashorn.server.core.ExecutionUnit;
 import org.nashorn.server.db.InMemoryStorage;
+import org.nashorn.server.util.JsonSerDesEngine;
+import org.nashorn.server.util.response.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -19,7 +21,7 @@ public class GetAllScriptsAsyncCommand implements Command {
     private static final Logger LOGGER = Logger.getLogger(GetAllScriptsAsyncCommand.class);
 
     @Override
-    public void execute(HttpServletRequest request, HttpServletResponse response)
+    public Object execute(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
 
         Set<ConcurrentMap.Entry<Long, ExecutionUnit>> units = InMemoryStorage.instance().getAllUnits();
@@ -27,9 +29,7 @@ public class GetAllScriptsAsyncCommand implements Command {
         StringBuffer url = request.getRequestURL();
 
         ScriptResponse.Builder respBuilder    = new ScriptResponse.Builder();
-        ScriptContent.Builder  contentBuilder = new ScriptContent.Builder();
-        Href.Builder           hrefBuilder    = new Href.Builder(url);
-
+        HrefBuilder hrefBuilder    = Href.newBuilder(url);
 
         respBuilder.copyHeadersFrom(response);
         respBuilder.statusOK();
@@ -38,12 +38,14 @@ public class GetAllScriptsAsyncCommand implements Command {
             ExecutionUnit u = unit.getValue();
 
             hrefBuilder.append(unit.getKey());
-            contentBuilder.script(u).href(hrefBuilder.build());
+            ScriptUnitData sud = new ScriptUnitData(u);
+            ScriptContent content = new ScriptContent();
+            content.setScript(sud);
+            content.setHref(hrefBuilder.build());
 
-            respBuilder.addContent(contentBuilder.build());
+            respBuilder.addContent(content);
         }
 
-        JsonSerDesEngine.indentOutput(true);
 
         try (final PrintWriter writer = response.getWriter()) {
             if (writer.checkError()) {
@@ -55,6 +57,6 @@ public class GetAllScriptsAsyncCommand implements Command {
             throw new ServletException(ex);
         }
 
-        JsonSerDesEngine.indentOutput(false);
+        return respBuilder.build();
     }
 }

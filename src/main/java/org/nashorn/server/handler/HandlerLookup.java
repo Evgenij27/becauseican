@@ -1,4 +1,4 @@
-package org.nashorn.server;
+package org.nashorn.server.handler;
 
 import org.apache.log4j.Logger;
 
@@ -34,7 +34,7 @@ public class HandlerLookup {
         LOGGER.info(String.format("Requested URI : %s", uri));
 
         Optional<Handler> oHandler = handlers.stream().filter( h -> {
-            ApiHandler ah = (ApiHandler) h;
+            AbstractHandler ah = (AbstractHandler) h;
             return pathMatcher(ah.getRootPath(), uri);
         }).findFirst();
 

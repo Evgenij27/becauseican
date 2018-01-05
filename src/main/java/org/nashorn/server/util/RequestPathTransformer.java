@@ -1,4 +1,4 @@
-package org.nashorn.server;
+package org.nashorn.server.util;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

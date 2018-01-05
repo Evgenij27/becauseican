@@ -1,4 +1,4 @@
-package org.nashorn.server;
+package org.nashorn.server.util;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.NoSuchElementException;

@@ -1,4 +1,4 @@
-package org.nashorn.server;
+package org.nashorn.server.handler;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;

@@ -1,4 +1,4 @@
-package org.nashorn.server;
+package org.nashorn.server.util;
 
 public class ScriptEntity {
 

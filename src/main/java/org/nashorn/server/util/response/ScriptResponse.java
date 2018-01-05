@@ -1,4 +1,4 @@
-package org.nashorn.server;
+package org.nashorn.server.util.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -14,11 +14,13 @@ public class ScriptResponse {
 
     private final int status;
     private final Map<String, String> headers;
+    private final ResponseMessage message;
     private final List<ScriptContent> content;
 
     private ScriptResponse(Builder b) {
         this.status = b.status;
         this.headers = new HashMap<>(b.headers);
+        this.message = b.message;
         if (b.content != null) {
             this.content = new ArrayList<>(b.content);
         } else {
@@ -42,7 +44,7 @@ public class ScriptResponse {
 
         private int status = HttpServletResponse.SC_OK;
         private Map<String, String> headers = new HashMap<>();
-
+        private ResponseMessage message;
         private List<ScriptContent> content = new ArrayList<>();
 
         public Builder statusOK() {
@@ -79,6 +81,13 @@ public class ScriptResponse {
 
         public Builder noContent() {
             this.content = null;
+            return this;
+        }
+
+        public Builder withMessage(String msg) {
+            ResponseMessage rm =  new ResponseMessage();
+            rm.setMessage(msg);
+            this.message = rm;
             return this;
         }
 

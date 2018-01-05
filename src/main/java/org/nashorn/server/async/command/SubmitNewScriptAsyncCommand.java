@@ -3,9 +3,9 @@ package org.nashorn.server.async.command;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.Logger;
 import org.nashorn.server.Command;
-import org.nashorn.server.JsonSerDesEngine;
-import org.nashorn.server.ScriptEntity;
-import org.nashorn.server.ScriptResponse;
+import org.nashorn.server.util.JsonSerDesEngine;
+import org.nashorn.server.util.ScriptEntity;
+import org.nashorn.server.util.response.ScriptResponse;
 import org.nashorn.server.core.ExecutionUnit;
 import org.nashorn.server.core.ExecutionUnitPool;
 import org.nashorn.server.core.NashornScriptCompiler;
@@ -25,7 +25,7 @@ public class SubmitNewScriptAsyncCommand implements Command {
     private static final Logger LOGGER = Logger.getLogger(SubmitNewScriptAsyncCommand.class);
 
     @Override
-    public void execute(HttpServletRequest request, HttpServletResponse response)
+    public Object execute(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
 
         String script;
@@ -56,18 +56,7 @@ public class SubmitNewScriptAsyncCommand implements Command {
         builder.copyHeadersFrom(response);
         builder.noContent();
 
-        JsonSerDesEngine.indentOutput(true);
-        String bresp = JsonSerDesEngine.writeEntity(builder.build());
-        JsonSerDesEngine.indentOutput(false);
-        try (final PrintWriter writer = response.getWriter()) {
-            if (writer.checkError()) {
-                LOGGER.error("Client disconnected");
-                throw new IOException("Client disconnected");
-            }
-            writer.print(bresp);
-        } catch (IOException ex) {
-            throw new ServletException(ex);
-        }
+        return builder.build();
     }
 
     private ScriptEntity getScriptEntity(Reader reader) throws IOException {

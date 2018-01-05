@@ -1,7 +1,8 @@
 package org.nashorn.server.async.command;
 
 import org.nashorn.server.Command;
-import org.nashorn.server.PathVariableSupplier;
+import org.nashorn.server.util.PathVariableSupplier;
+import org.nashorn.server.util.response.ResponseMessage;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -12,7 +13,7 @@ import java.io.PrintWriter;
 public class GreetingAsyncCommand implements Command {
 
     @Override
-    public void execute(HttpServletRequest request, HttpServletResponse response)
+    public Object execute(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
 
         PathVariableSupplier pvs = new PathVariableSupplier(request);
@@ -24,6 +25,8 @@ public class GreetingAsyncCommand implements Command {
         } catch (IOException ex) {
             throw new ServletException(ex);
         }
-
+        ResponseMessage rm = new ResponseMessage();
+        rm.setMessage(String.format("Hello, %s%n", name));
+        return rm;
     }
 }

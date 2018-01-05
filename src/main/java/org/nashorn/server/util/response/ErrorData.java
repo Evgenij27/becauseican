@@ -1,4 +1,4 @@
-package org.nashorn.server;
+package org.nashorn.server.util.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;

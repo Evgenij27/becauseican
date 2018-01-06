@@ -53,16 +53,6 @@ public class GetScriptByIdAsyncCommand implements Command {
 
         builder.addContent(sc);
 
-        try (final PrintWriter writer = response.getWriter()) {
-            if (writer.checkError()) {
-                LOGGER.error("Client disconnected");
-                throw new IOException("Client disconnected");
-            }
-            writer.print(JsonSerDesEngine.writeEntity(builder.build()));
-        } catch (IOException ex) {
-            throw new ServletException(ex);
-        }
-
         return builder.build();
     }
 }

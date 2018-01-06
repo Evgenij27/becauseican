@@ -2,7 +2,6 @@ package org.nashorn.server.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import org.nashorn.server.util.response.ScriptResponse;
 
 import java.io.IOException;
 import java.io.Reader;

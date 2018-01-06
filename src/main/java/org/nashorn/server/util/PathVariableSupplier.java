@@ -3,7 +3,6 @@ package org.nashorn.server.util;
 import org.nashorn.server.PathVariableNotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.NoSuchElementException;
 
 public class PathVariableSupplier {
 

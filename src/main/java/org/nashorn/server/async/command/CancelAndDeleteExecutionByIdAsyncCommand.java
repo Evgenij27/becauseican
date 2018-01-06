@@ -44,15 +44,6 @@ public class CancelAndDeleteExecutionByIdAsyncCommand implements Command {
         respBuilder.noContent();
         respBuilder.withMessage("done!");
 
-        try (final PrintWriter writer = response.getWriter()) {
-            if (writer.checkError()) {
-                throw new IOException("Client disconnected");
-            }
-            writer.write(JsonSerDesEngine.writeEntity(respBuilder.build()));
-        } catch (IOException ex) {
-            throw new ServletException(ex);
-        }
-
         return respBuilder.build();
     }
 }

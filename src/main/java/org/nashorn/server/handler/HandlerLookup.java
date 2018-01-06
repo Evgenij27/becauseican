@@ -1,7 +1,6 @@
 package org.nashorn.server.handler;
 
 import org.apache.log4j.Logger;
-import org.nashorn.server.CommandNotFoundException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;

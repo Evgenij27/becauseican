@@ -45,14 +45,14 @@ public abstract class AbstractHandler implements Handler {
         }
     }
 
-    protected ScriptResponse buildErrorMsg(Exception ex, HttpServletResponse resp) throws ServletException {
-        ScriptResponse sr = new ScriptResponse.Builder()
+    protected ScriptResponse buildErrorMsg(Exception ex, HttpServletResponse resp) {
+
+        return new ScriptResponse.Builder()
                 .copyHeadersFrom(resp)
                 .statusBadRequest()
                 .noContent()
                 .withMessage(ex.getMessage())
                 .build();
-        return sr;
     }
 
     public String getRootPath() {
@@ -79,6 +79,4 @@ public abstract class AbstractHandler implements Handler {
         AbstractHandler ah = (AbstractHandler) o;
         return ah.getRootPath().compareTo(getRootPath());
     }
-
-
 }

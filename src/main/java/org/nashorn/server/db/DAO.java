@@ -11,11 +11,11 @@ public interface DAO {
 
     long create(ExecutionUnit e);
 
-    ExecutionUnit read(long id);
+    ExecutionUnit read(long id) throws UnitNotFoundException;
 
     void update(long id, ExecutionUnit e);
 
-    void delete(long id);
+    void delete(long id) throws UnitNotFoundException;
 
     Set<Map.Entry<Long, ExecutionUnit>> getAllUnits();
 }

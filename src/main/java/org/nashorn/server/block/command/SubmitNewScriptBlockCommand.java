@@ -24,9 +24,17 @@ public class SubmitNewScriptBlockCommand implements Command {
 
     @Override
     public Object execute(HttpServletRequest request, HttpServletResponse response)
-            throws IOException, ServletException {
+            throws CommandExecutionException, ServletException {
 
-        String script = getScriptFromRequest(request.getReader());
+        Reader reader;
+        try {
+            reader = request.getReader();
+        } catch (IOException e) {
+            logger.error(e);
+            throw new ServletException(e);
+        }
+
+        String script = getScriptFromRequest(reader);
 
         CompiledScript compiledScript = compiledScript(script);
 
@@ -61,12 +69,12 @@ public class SubmitNewScriptBlockCommand implements Command {
         return null;
     }
 
-    private String getScriptFromRequest(Reader reader) throws ServletException {
+    private String getScriptFromRequest(Reader reader) throws CommandExecutionException {
         String script;
         try {
             script = JsonSerDesEngine.readEntity(reader).getScript();
         } catch (IOException ex) {
-            throw new ServletException(ex);
+            throw new CommandExecutionException(String.format("Error during parsing JSON : %s", ex.getMessage()));
         }
         return script;
     }

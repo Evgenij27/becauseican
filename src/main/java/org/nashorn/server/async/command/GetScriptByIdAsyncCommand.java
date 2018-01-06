@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.nashorn.server.*;
 import org.nashorn.server.core.ExecutionUnit;
 import org.nashorn.server.db.InMemoryStorage;
+import org.nashorn.server.db.UnitNotFoundException;
 import org.nashorn.server.util.JsonSerDesEngine;
 import org.nashorn.server.util.response.Href;
 import org.nashorn.server.util.PathVariableSupplier;
@@ -23,13 +24,23 @@ public class GetScriptByIdAsyncCommand implements Command {
 
     @Override
     public Object execute(HttpServletRequest request, HttpServletResponse response)
-            throws IOException, ServletException {
+            throws CommandExecutionException, ServletException {
 
         PathVariableSupplier pvs = new PathVariableSupplier(request);
 
-        long id = pvs.supplyAsLong("id");
+        long id = 0;
+        try {
+            id = pvs.supplyAsLong("id");
+        } catch (PathVariableNotFoundException ex) {
+            throw new CommandExecutionException(ex.getMessage());
+        }
 
-        ExecutionUnit unit = InMemoryStorage.instance().read(id);
+        ExecutionUnit unit = null;
+        try {
+            unit = InMemoryStorage.instance().read(id);
+        } catch (UnitNotFoundException ex) {
+            throw new CommandExecutionException(ex.getMessage());
+        }
 
         ScriptResponse.Builder builder = new ScriptResponse.Builder();
 

@@ -1,6 +1,7 @@
 package org.nashorn.server.handler;
 
 import org.apache.log4j.Logger;
+import org.nashorn.server.CommandNotFoundException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -41,6 +42,7 @@ public class HandlerLookup {
         Handler handler = oHandler.orElseThrow(ServletException::new);
         LOGGER.info("Handle request");
         handler.handle(request, response);
+
     }
 
     private String transform(String path) {

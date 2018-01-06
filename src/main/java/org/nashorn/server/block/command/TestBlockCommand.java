@@ -1,6 +1,7 @@
 package org.nashorn.server.block.command;
 
 import org.nashorn.server.Command;
+import org.nashorn.server.CommandExecutionException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -12,7 +13,7 @@ public class TestBlockCommand implements Command {
 
     @Override
     public Object execute(HttpServletRequest request, HttpServletResponse response)
-            throws IOException, ServletException {
+            throws CommandExecutionException, ServletException {
 
         try (final PrintWriter writer = response.getWriter()) {
             for (int i = 0; i < 20; i++) {

@@ -1,6 +1,9 @@
 package org.nashorn.server.async.command;
 
 import org.nashorn.server.Command;
+import org.nashorn.server.CommandExecutionException;
+import org.nashorn.server.PathVariableNotFoundException;
+import org.nashorn.server.db.UnitNotFoundException;
 import org.nashorn.server.util.JsonSerDesEngine;
 import org.nashorn.server.util.PathVariableSupplier;
 import org.nashorn.server.util.response.ScriptResponse;
@@ -16,14 +19,24 @@ import java.io.PrintWriter;
 public class CancelAndDeleteExecutionByIdAsyncCommand implements Command {
     @Override
     public Object execute(HttpServletRequest request, HttpServletResponse response)
-            throws IOException, ServletException {
+            throws CommandExecutionException, ServletException {
 
         PathVariableSupplier pvs = new PathVariableSupplier(request);
-        long id = pvs.supplyAsLong("id");
+        long id = 0;
+        try {
+            id = pvs.supplyAsLong("id");
+        } catch (PathVariableNotFoundException ex) {
+            throw new CommandExecutionException(ex.getMessage());
+        }
 
-        ExecutionUnit unit = InMemoryStorage.instance().read(id);
+        ExecutionUnit unit = null;
+        try {
+            unit = InMemoryStorage.instance().read(id);
+        } catch (UnitNotFoundException ex) {
+            throw new CommandExecutionException(ex.getMessage());
+        }
+
         unit.cancel(true);
-        InMemoryStorage.instance().delete(id);
 
         ScriptResponse.Builder respBuilder = new ScriptResponse.Builder();
         respBuilder.statusOK();

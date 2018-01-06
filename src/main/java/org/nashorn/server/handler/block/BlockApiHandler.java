@@ -1,15 +1,20 @@
 package org.nashorn.server.handler.block;
 
+import org.apache.log4j.Logger;
 import org.nashorn.server.Command;
+import org.nashorn.server.CommandExecutionException;
+import org.nashorn.server.CommandNotFoundException;
 import org.nashorn.server.handler.AbstractHandler;
 import org.nashorn.server.handler.HandlerBuilder;
+import org.nashorn.server.util.response.ScriptResponse;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 public class BlockApiHandler extends AbstractHandler {
+
+    private static final Logger LOGGER = Logger.getLogger(BlockApiHandler.class);
 
     public static HandlerBuilder newBuilder(String root) {
         return new BlockApiHandlerBuilder(root);
@@ -21,12 +26,16 @@ public class BlockApiHandler extends AbstractHandler {
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response)
-            throws IOException, ServletException {
-        Command command = resolver.resolve(request);
-        if (command == null) {
-            throw new ServletException("Bad request");
-        }
-        command.execute(request, response);
-    }
+            throws ServletException {
 
+        try {
+            Command command = resolver.resolve(request);
+            command.execute(request, response);
+        } catch (CommandNotFoundException | CommandExecutionException ex) {
+            LOGGER.error(ex);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            ScriptResponse sr = buildErrorMsg(ex, response);
+            writeResponse(sr, response);
+        }
+    }
 }

@@ -84,9 +84,6 @@ public class ApiEntrypointServlet extends HttpServlet {
             lookup.lookupAndProcess(req, resp);
         } catch (ServletException ex) {
             LOGGER.error(ex);
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        } catch (IOException ex) {
-            LOGGER.error(ex);
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
         LOGGER.info("END SERVICE");

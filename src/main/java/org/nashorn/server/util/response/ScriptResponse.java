@@ -85,9 +85,7 @@ public class ScriptResponse {
         }
 
         public Builder withMessage(String msg) {
-            ResponseMessage rm =  new ResponseMessage();
-            rm.setMessage(msg);
-            this.message = rm;
+            this.message = new ResponseMessage(msg);
             return this;
         }
 

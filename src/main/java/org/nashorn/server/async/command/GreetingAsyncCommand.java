@@ -1,6 +1,8 @@
 package org.nashorn.server.async.command;
 
 import org.nashorn.server.Command;
+import org.nashorn.server.CommandExecutionException;
+import org.nashorn.server.PathVariableNotFoundException;
 import org.nashorn.server.util.PathVariableSupplier;
 import org.nashorn.server.util.response.ResponseMessage;
 
@@ -14,19 +16,17 @@ public class GreetingAsyncCommand implements Command {
 
     @Override
     public Object execute(HttpServletRequest request, HttpServletResponse response)
-            throws IOException, ServletException {
+            throws CommandExecutionException, ServletException {
 
         PathVariableSupplier pvs = new PathVariableSupplier(request);
 
-        String name = pvs.supplyAsString("name");
-        try (final PrintWriter writer = response.getWriter()) {
-            if (writer.checkError()) throw new IOException("Client disconnection");
-            writer.printf("Hello, %s%n", name);
-        } catch (IOException ex) {
-            throw new ServletException(ex);
+        String name = null;
+        try {
+            name = pvs.supplyAsString("name");
+        } catch (PathVariableNotFoundException ex) {
+            throw new CommandExecutionException(ex.getMessage());
         }
-        ResponseMessage rm = new ResponseMessage();
-        rm.setMessage(String.format("Hello, %s%n", name));
-        return rm;
+
+        return new ResponseMessage(String.format("Hello, %s%n", name));
     }
 }

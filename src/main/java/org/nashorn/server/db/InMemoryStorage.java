@@ -32,7 +32,10 @@ public class InMemoryStorage implements DAO {
     }
 
     @Override
-    public ExecutionUnit read(long id) {
+    public ExecutionUnit read(long id) throws UnitNotFoundException {
+        if (!storage.containsKey(id)) {
+            throw new UnitNotFoundException(String.format("Unit with this id %d not found", id));
+        }
         return storage.get(id);
     }
 
@@ -42,7 +45,10 @@ public class InMemoryStorage implements DAO {
     }
 
     @Override
-    public void delete(long id) {
+    public void delete(long id) throws UnitNotFoundException {
+        if (!storage.containsKey(id)) {
+            throw new UnitNotFoundException(String.format("Unit with this id %d not found", id));
+        }
         storage.remove(id);
     }
 

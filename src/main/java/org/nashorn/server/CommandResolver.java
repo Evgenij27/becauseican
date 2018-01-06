@@ -2,7 +2,6 @@ package org.nashorn.server;
 
 import org.apache.log4j.Logger;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +29,7 @@ public class CommandResolver {
 
     }
 
-    public Command resolve(HttpServletRequest request) throws ServletException {
+    public Command resolve(HttpServletRequest request) throws CommandNotFoundException {
 
         Command com = null;
         Pattern pattern = null;
@@ -42,9 +41,7 @@ public class CommandResolver {
         LOGGER.info("Method name -> " + methodName);
 
         ConcurrentMap<String, Command> comms = getCommandByMethod(methodName);
-        if (comms == null) {
-            throw new ServletException("No such method");
-        }
+
         LOGGER.info("COMMANDS " + comms);
         for (ConcurrentMap.Entry<String, Command> entry : comms.entrySet()) {
             String template = entry.getKey();
@@ -59,7 +56,7 @@ public class CommandResolver {
             }
         }
         if (com == null) {
-            throw new ServletException();
+            throw new CommandNotFoundException("Endpoint not found");
         }
         return com;
     }

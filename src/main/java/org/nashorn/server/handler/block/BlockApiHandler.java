@@ -1,6 +1,5 @@
 package org.nashorn.server.handler.block;
 
-import org.apache.log4j.Logger;
 import org.nashorn.server.Command;
 import org.nashorn.server.CommandExecutionException;
 import org.nashorn.server.CommandNotFoundException;
@@ -13,8 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public class BlockApiHandler extends AbstractHandler {
-
-    private static final Logger LOGGER = Logger.getLogger(BlockApiHandler.class);
 
     public static HandlerBuilder newBuilder(String root) {
         return new BlockApiHandlerBuilder(root);
@@ -29,7 +26,7 @@ public class BlockApiHandler extends AbstractHandler {
             throws ServletException {
 
         try {
-            Command command = resolver.resolve(request);
+            Command command = resolverChain.resolve(request);
             command.execute(request, response);
         } catch (CommandNotFoundException | CommandExecutionException ex) {
             LOGGER.error(ex);

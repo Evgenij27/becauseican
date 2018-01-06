@@ -14,8 +14,6 @@ import javax.servlet.http.HttpServletResponse;
 
 public class AsyncApiHandler extends AbstractHandler {
 
-    private static final Logger LOGGER = Logger.getLogger(AsyncApiHandler.class);
-
     public static HandlerBuilder newBuilder(String root) {
         return new AsyncApiHandlerBuilder(root);
     }
@@ -28,11 +26,11 @@ public class AsyncApiHandler extends AbstractHandler {
     public void handle(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
         try {
-            Command command = resolver.resolve(request);
+            Command command = resolverChain.resolve(request);
             Object msg = command.execute(request, response);
             writeResponse(msg, response);
         } catch (CommandNotFoundException | CommandExecutionException ex) {
-            LOGGER.error(ex);
+            LOGGER.error(ex.getMessage());
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             ScriptResponse sr = buildErrorMsg(ex, response);
             writeResponse(sr, response);

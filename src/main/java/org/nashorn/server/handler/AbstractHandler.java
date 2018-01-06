@@ -1,7 +1,8 @@
 package org.nashorn.server.handler;
 
 import org.apache.log4j.Logger;
-import org.nashorn.server.CommandResolver;
+import org.nashorn.server.util.resolver.CommandResolver;
+import org.nashorn.server.util.resolver.CommandResolverImpl;
 import org.nashorn.server.util.JsonSerDesEngine;
 import org.nashorn.server.util.response.ScriptResponse;
 
@@ -13,16 +14,22 @@ import java.io.PrintWriter;
 
 public abstract class AbstractHandler implements Handler {
 
-    private static final Logger LOGGER = Logger.getLogger(AbstractHandler.class);
+    protected static final Logger LOGGER = Logger.getLogger(AbstractHandler.class);
 
-    protected final CommandResolver resolver;
+    protected final CommandResolver resolverChain;
 
     protected final String rootPath;
 
     protected AbstractHandler(HandlerBuilder builder) {
-        this.resolver = new CommandResolver(builder.getEndpoints, builder.postEndpoints,
-                builder.putEndpoints, builder.deleteEndpoints);
+        this.resolverChain = buildResolverChain(builder);
         this.rootPath = builder.rootPath;
+    }
+
+    private CommandResolver buildResolverChain(HandlerBuilder b) {
+        CommandResolver putResolver    = new CommandResolverImpl(b.putEndpoints, "PUT", null);
+        CommandResolver deleteResolver = new CommandResolverImpl(b.deleteEndpoints, "DELETE", putResolver);
+        CommandResolver postResolver   = new CommandResolverImpl(b.postEndpoints, "POST", deleteResolver);
+        return new CommandResolverImpl(b.getEndpoints, "GET", postResolver);
     }
 
     protected void writeResponse(Object msg, HttpServletResponse resp) throws ServletException {
@@ -41,7 +48,7 @@ public abstract class AbstractHandler implements Handler {
     protected ScriptResponse buildErrorMsg(Exception ex, HttpServletResponse resp) throws ServletException {
         ScriptResponse sr = new ScriptResponse.Builder()
                 .copyHeadersFrom(resp)
-                .statusError()
+                .statusBadRequest()
                 .noContent()
                 .withMessage(ex.getMessage())
                 .build();

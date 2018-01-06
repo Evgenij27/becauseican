@@ -27,6 +27,6 @@ public class GreetingAsyncCommand implements Command {
             throw new CommandExecutionException(ex.getMessage());
         }
 
-        return new ResponseMessage(String.format("Hello, %s%n", name));
+        return new ResponseMessage(String.format("Hello, %s", name));
     }
 }

@@ -14,7 +14,7 @@ public class ScriptResponse {
 
     private final int status;
     private final Map<String, String> headers;
-    private final ResponseMessage message;
+    private final String message;
     private final List<ScriptContent> content;
 
     private ScriptResponse(Builder b) {
@@ -40,15 +40,24 @@ public class ScriptResponse {
         return content;
     }
 
+    public String getMessage() {
+        return message;
+    }
+
     public static class Builder {
 
         private int status = HttpServletResponse.SC_OK;
         private Map<String, String> headers = new HashMap<>();
-        private ResponseMessage message;
+        private String message;
         private List<ScriptContent> content = new ArrayList<>();
 
         public Builder statusOK() {
             this.status = HttpServletResponse.SC_OK;
+            return this;
+        }
+
+        public Builder statusBadRequest() {
+            this.status = HttpServletResponse.SC_BAD_REQUEST;
             return this;
         }
 
@@ -85,7 +94,7 @@ public class ScriptResponse {
         }
 
         public Builder withMessage(String msg) {
-            this.message = new ResponseMessage(msg);
+            this.message = msg;
             return this;
         }
 

@@ -1,13 +1,15 @@
 package org.nashorn.server.util.response;
 
+import javax.servlet.http.HttpServletRequest;
+
 public class HrefBuilder {
 
     private int originalBufferLen;
     private StringBuffer baseUri;
 
-    public HrefBuilder(StringBuffer baseUri) {
-        this.baseUri = baseUri;
-        this.originalBufferLen = baseUri.length();
+    public HrefBuilder(HttpServletRequest req) {
+        this.baseUri = req.getRequestURL();
+        this.originalBufferLen = this.baseUri.length();
     }
 
     private boolean checkForTrailingSlash() {

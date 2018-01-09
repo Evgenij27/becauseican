@@ -5,7 +5,7 @@ import org.nashorn.server.*;
 import org.nashorn.server.core.ExecutionUnit;
 import org.nashorn.server.db.InMemoryStorage;
 import org.nashorn.server.db.UnitNotFoundException;
-import org.nashorn.server.util.JsonSerDesEngine;
+import org.nashorn.server.util.PathVariableProcessingException;
 import org.nashorn.server.util.response.Href;
 import org.nashorn.server.util.PathVariableSupplier;
 import org.nashorn.server.util.response.ScriptContent;
@@ -15,8 +15,6 @@ import org.nashorn.server.util.response.ScriptUnitData;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
 
 public class GetScriptByIdAsyncCommand implements Command {
 
@@ -31,7 +29,8 @@ public class GetScriptByIdAsyncCommand implements Command {
         long id = 0;
         try {
             id = pvs.supplyAsLong("id");
-        } catch (PathVariableNotFoundException ex) {
+        } catch (PathVariableProcessingException ex) {
+            LOGGER.error(ex);
             throw new CommandExecutionException(ex.getMessage());
         }
 
@@ -39,6 +38,7 @@ public class GetScriptByIdAsyncCommand implements Command {
         try {
             unit = InMemoryStorage.instance().read(id);
         } catch (UnitNotFoundException ex) {
+            LOGGER.error(ex);
             throw new CommandExecutionException(ex.getMessage());
         }
 

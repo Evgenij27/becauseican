@@ -2,9 +2,8 @@ package org.nashorn.server.async.command;
 
 import org.nashorn.server.Command;
 import org.nashorn.server.CommandExecutionException;
-import org.nashorn.server.PathVariableNotFoundException;
+import org.nashorn.server.util.PathVariableProcessingException;
 import org.nashorn.server.db.UnitNotFoundException;
-import org.nashorn.server.util.JsonSerDesEngine;
 import org.nashorn.server.util.PathVariableSupplier;
 import org.nashorn.server.util.response.ScriptResponse;
 import org.nashorn.server.core.ExecutionUnit;
@@ -13,8 +12,6 @@ import org.nashorn.server.db.InMemoryStorage;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
 
 public class CancelAndDeleteExecutionByIdAsyncCommand implements Command {
     @Override
@@ -25,7 +22,7 @@ public class CancelAndDeleteExecutionByIdAsyncCommand implements Command {
         long id = 0;
         try {
             id = pvs.supplyAsLong("id");
-        } catch (PathVariableNotFoundException ex) {
+        } catch (PathVariableProcessingException ex) {
             throw new CommandExecutionException(ex.getMessage());
         }
 

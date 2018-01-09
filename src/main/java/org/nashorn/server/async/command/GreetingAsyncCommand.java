@@ -2,7 +2,7 @@ package org.nashorn.server.async.command;
 
 import org.nashorn.server.Command;
 import org.nashorn.server.CommandExecutionException;
-import org.nashorn.server.PathVariableNotFoundException;
+import org.nashorn.server.util.PathVariableProcessingException;
 import org.nashorn.server.util.PathVariableSupplier;
 import org.nashorn.server.util.response.ResponseMessage;
 
@@ -21,7 +21,7 @@ public class GreetingAsyncCommand implements Command {
         String name = null;
         try {
             name = pvs.supplyAsString("name");
-        } catch (PathVariableNotFoundException ex) {
+        } catch (PathVariableProcessingException ex) {
             throw new CommandExecutionException(ex.getMessage());
         }
 

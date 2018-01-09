@@ -18,7 +18,7 @@ public class Href {
         return self;
     }
 
-    public static HrefBuilder newBuilder(HttpServletRequest url) {
+    public static HrefBuilder newBuilder(StringBuffer url) {
         return new HrefBuilder(url);
     }
 

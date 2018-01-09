@@ -5,30 +5,30 @@ import javax.servlet.http.HttpServletRequest;
 public class HrefBuilder {
 
     private int originalBufferLen;
-    private StringBuffer baseUri;
+    private StringBuffer url;
 
-    public HrefBuilder(HttpServletRequest req) {
-        this.baseUri = req.getRequestURL();
-        this.originalBufferLen = this.baseUri.length();
+    public HrefBuilder(StringBuffer url) {
+        this.url = url;
+        this.originalBufferLen = url.length();
     }
 
     private boolean checkForTrailingSlash() {
-        int tailIndex = baseUri.length() - 1;
-        return baseUri.charAt(tailIndex) == '/';
+        int tailIndex = url.length() - 1;
+        return url.charAt(tailIndex) == '/';
     }
 
     public HrefBuilder append(long id) {
         if (!checkForTrailingSlash()) {
-            baseUri.append("/").append(id);
+            url.append("/").append(id);
         } else {
-            baseUri.append(id);
+            url.append(id);
         }
         return this;
     }
 
     public Href build() {
-        String self = baseUri.toString();
-        baseUri.setLength(originalBufferLen);
+        String self = url.toString();
+        url.setLength(originalBufferLen);
         return new Href(self);
     }
 }

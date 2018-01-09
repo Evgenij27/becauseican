@@ -26,10 +26,9 @@ public class GetAllScriptsAsyncCommand implements Command {
 
         Set<ConcurrentMap.Entry<Long, ExecutionUnit>> units = InMemoryStorage.instance().getAllUnits();
 
-        StringBuffer url = request.getRequestURL();
-
-        ScriptResponse.Builder respBuilder    = new ScriptResponse.Builder();
-        HrefBuilder hrefBuilder    = Href.newBuilder(url);
+        ScriptResponse.Builder respBuilder = new ScriptResponse.Builder();
+        HrefBuilder hrefBuilder
+                = Href.newBuilder(new StringBuilder(request.getRequestURL()));
 
         respBuilder.copyHeadersFrom(response);
         respBuilder.statusOK();

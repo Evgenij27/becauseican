@@ -9,6 +9,8 @@ import org.nashorn.server.core.ExecutionUnitPool;
 import org.nashorn.server.core.NashornScriptCompiler;
 import org.nashorn.server.db.InMemoryStorage;
 import org.nashorn.server.util.ScriptEntity;
+import org.nashorn.server.util.response.Href;
+import org.nashorn.server.util.response.HrefBuilder;
 import org.nashorn.server.util.response.ScriptResponse;
 
 import javax.script.CompiledScript;
@@ -50,7 +52,8 @@ public class SubmitNewScriptAsyncCommand implements Command {
         long id = InMemoryStorage.instance().create(unit);
 
         response.setStatus(HttpServletResponse.SC_CREATED);
-        response.setHeader("Location", createLocation(id, request.getRequestURL()));
+        HrefBuilder hb = Href.newBuilder(new StringBuilder(request.getRequestURL()));
+        response.setHeader("Location", hb.append(id).build().getSelf());
 
         ScriptResponse.Builder builder = new ScriptResponse.Builder();
         builder.statusCreated();
@@ -63,9 +66,5 @@ public class SubmitNewScriptAsyncCommand implements Command {
     private ScriptEntity getScriptEntity(Reader reader) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.readValue(reader, ScriptEntity.class);
-    }
-
-    private String createLocation(long id, StringBuffer url) {
-        return url.append("/").append(id).toString();
     }
 }

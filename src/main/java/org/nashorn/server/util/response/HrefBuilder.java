@@ -1,13 +1,11 @@
 package org.nashorn.server.util.response;
 
-import javax.servlet.http.HttpServletRequest;
-
 public class HrefBuilder {
 
     private int originalBufferLen;
-    private StringBuffer url;
+    private StringBuilder url;
 
-    public HrefBuilder(StringBuffer url) {
+    public HrefBuilder(StringBuilder url) {
         this.url = url;
         this.originalBufferLen = url.length();
     }

@@ -7,6 +7,7 @@ import org.nashorn.server.handler.AbstractHandler;
 import org.nashorn.server.handler.HandlerBuilder;
 import org.nashorn.server.handler.HandlerChain;
 import org.nashorn.server.util.response.ScriptResponse;
+import org.nashorn.server.util.response.ResponseMessage;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -38,7 +39,7 @@ public class BlockApiHandler extends AbstractHandler {
         } else if (chain != null) {
             chain.handle(req, resp);
         } else {
-            throwServletException("Bad request.");
+            writeResponse(new ResponseMessage("Bad request."), resp);
         }
     }
 }

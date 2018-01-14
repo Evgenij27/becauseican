@@ -29,12 +29,13 @@ public class CancelAndDeleteExecutionByIdAsyncCommand implements Command {
         ExecutionUnit unit = null;
         try {
             unit = InMemoryStorage.instance().read(id);
+            InMemoryStorage.instance().delete(id);
         } catch (UnitNotFoundException ex) {
             throw new CommandExecutionException(ex.getMessage());
         }
 
         unit.cancel(true);
-
+        
         ScriptResponse.Builder respBuilder = new ScriptResponse.Builder();
         respBuilder.statusOK();
         respBuilder.copyHeadersFrom(response);

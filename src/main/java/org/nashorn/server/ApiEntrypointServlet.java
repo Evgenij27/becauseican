@@ -4,8 +4,10 @@ import org.apache.log4j.Logger;
 import org.nashorn.server.async.command.*;
 import org.nashorn.server.block.command.SubmitNewScriptBlockCommand;
 import org.nashorn.server.block.command.TestBlockCommand;
+import org.nashorn.server.handler.Handler;
 import org.nashorn.server.handler.HandlerBuilder;
-import org.nashorn.server.handler.HandlerLookup;
+import org.nashorn.server.handler.HandlerChain;
+import org.nashorn.server.handler.HandlerChainImpl;
 import org.nashorn.server.handler.async.AsyncApiHandler;
 import org.nashorn.server.handler.block.BlockApiHandler;
 
@@ -27,7 +29,8 @@ public class ApiEntrypointServlet extends HttpServlet {
 
     private static final Logger LOGGER = Logger.getLogger(ApiEntrypointServlet.class);
 
-    private final HandlerLookup lookup = new HandlerLookup();
+    private Handler handler;
+    private HandlerChain chain;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -67,8 +70,9 @@ public class ApiEntrypointServlet extends HttpServlet {
 
 
 
-        lookup.registerHandler(blockBuilder.build());
-        lookup.registerHandler(asyncBuilder.build());
+       handler = blockBuilder.build();
+       chain = new HandlerChainImpl(asyncBuilder.build(), null);
+
     }
 
     @Override
@@ -81,7 +85,7 @@ public class ApiEntrypointServlet extends HttpServlet {
         resp.setContentType("application/json");
 
         try {
-            lookup.lookupAndProcess(req, resp);
+            handler.handle(req, resp, chain);
         } catch (ServletException ex) {
             LOGGER.error(ex);
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

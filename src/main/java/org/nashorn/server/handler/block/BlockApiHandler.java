@@ -5,6 +5,7 @@ import org.nashorn.server.CommandExecutionException;
 import org.nashorn.server.CommandNotFoundException;
 import org.nashorn.server.handler.AbstractHandler;
 import org.nashorn.server.handler.HandlerBuilder;
+import org.nashorn.server.handler.HandlerChain;
 import org.nashorn.server.util.response.ScriptResponse;
 
 import javax.servlet.ServletException;
@@ -22,17 +23,22 @@ public class BlockApiHandler extends AbstractHandler {
     }
 
     @Override
-    public void handle(HttpServletRequest request, HttpServletResponse response)
+    public void handle(HttpServletRequest req, HttpServletResponse resp, HandlerChain chain)
             throws ServletException {
-
-        try {
-            Command command = resolverChain.resolve(request);
-            command.execute(request, response);
-        } catch (CommandNotFoundException | CommandExecutionException ex) {
-            LOGGER.error(ex);
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            ScriptResponse sr = buildErrorMsg(ex, response);
-            writeResponse(sr, response);
+        if (findMatch(rootPath, req.getRequestURI())) {
+            try {
+                Command command = resolverChain.resolve(req);
+                command.execute(req, resp);
+            } catch (CommandNotFoundException | CommandExecutionException ex) {
+                LOGGER.error(ex);
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                ScriptResponse sr = buildErrorMsg(ex, resp);
+                writeResponse(sr, resp);
+            }
+        } else if (chain != null) {
+            chain.handle(req, resp);
+        } else {
+            throwServletException("Bad request.");
         }
     }
 }

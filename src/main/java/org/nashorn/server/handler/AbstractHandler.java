@@ -1,8 +1,8 @@
 package org.nashorn.server.handler;
 
 import org.apache.log4j.Logger;
-import org.nashorn.server.util.resolver.CommandResolver;
-import org.nashorn.server.util.resolver.CommandResolverImpl;
+import org.nashorn.server.resolver.CommandResolver;
+import org.nashorn.server.resolver.CommandResolverImpl;
 import org.nashorn.server.util.JsonSerDesEngine;
 import org.nashorn.server.util.response.ScriptResponse;
 
@@ -10,9 +10,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public abstract class AbstractHandler implements Handler {
+
+    private static final String PATH_REGEX = "(/([^/]+)(/)?)+?";
 
     protected static final Logger LOGGER = Logger.getLogger(AbstractHandler.class);
 
@@ -55,28 +59,17 @@ public abstract class AbstractHandler implements Handler {
                 .build();
     }
 
-    public String getRootPath() {
-        return this.rootPath;
+    private String transform(String rootPath) {
+        return rootPath + PATH_REGEX;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        AbstractHandler that = (AbstractHandler) o;
-
-        return rootPath != null ? rootPath.equals(that.rootPath) : that.rootPath == null;
+    protected boolean findMatch(String rootPath, String uri) {
+        Pattern pattern = Pattern.compile(transform(rootPath));
+        Matcher matcher = pattern.matcher(uri);
+        return matcher.matches();
     }
 
-    @Override
-    public int hashCode() {
-        return rootPath != null ? rootPath.hashCode() : 0;
-    }
-
-    @Override
-    public int compareTo(Handler o) {
-        AbstractHandler ah = (AbstractHandler) o;
-        return ah.getRootPath().compareTo(getRootPath());
+    protected void throwServletException(String msg) throws ServletException {
+        throw new ServletException(msg);
     }
 }

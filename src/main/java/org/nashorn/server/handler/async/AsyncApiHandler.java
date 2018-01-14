@@ -5,6 +5,7 @@ import org.nashorn.server.CommandExecutionException;
 import org.nashorn.server.CommandNotFoundException;
 import org.nashorn.server.handler.AbstractHandler;
 import org.nashorn.server.handler.HandlerBuilder;
+import org.nashorn.server.handler.HandlerChain;
 import org.nashorn.server.util.response.ScriptResponse;
 
 import javax.servlet.ServletException;
@@ -22,17 +23,23 @@ public class AsyncApiHandler extends AbstractHandler {
     }
 
     @Override
-    public void handle(HttpServletRequest request, HttpServletResponse response)
+    public void handle(HttpServletRequest req, HttpServletResponse resp, HandlerChain chain)
             throws ServletException {
-        try {
-            Command command = resolverChain.resolve(request);
-            Object msg = command.execute(request, response);
-            writeResponse(msg, response);
-        } catch (CommandNotFoundException | CommandExecutionException ex) {
-            LOGGER.error(ex.getMessage());
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            ScriptResponse sr = buildErrorMsg(ex, response);
-            writeResponse(sr, response);
+        if (findMatch(rootPath, req.getRequestURI())) {
+            try {
+                Command command = resolverChain.resolve(req);
+                Object msg = command.execute(req, resp);
+                writeResponse(msg, resp);
+            } catch (CommandNotFoundException | CommandExecutionException ex) {
+                LOGGER.error(ex.getMessage());
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                ScriptResponse sr = buildErrorMsg(ex, resp);
+                writeResponse(sr, resp);
+            }
+        } else if (chain != null) {
+            chain.handle(req, resp);
+        } else {
+            throwServletException("Bad request.");
         }
     }
 }

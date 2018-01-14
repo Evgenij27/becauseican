@@ -1,4 +1,4 @@
-package org.nashorn.server.util.resolver;
+package org.nashorn.server.resolver;
 
 import org.nashorn.server.Command;
 import org.nashorn.server.CommandNotFoundException;

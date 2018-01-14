@@ -19,23 +19,27 @@ public class PathVariableSupplier {
     }
 
     public String supplyAsString(String name) throws PathVariableProcessingException {
+        Converter<Object, String> converter = String::valueOf;
+        return converter.convert(getOrThrow(name));
+    }
+
+    public int supplyAsInt(String name) throws PathVariableProcessingException {
         try {
-            Converter<Object, String> converter = String::valueOf;
-            return converter.convert(getOrThrow(name));
+            String attr = supplyAsString(name);
+            Converter<String, Integer> converter = Integer::parseInt;
+            return converter.convert(attr);
         } catch (NumberFormatException ex) {
             throw new PathVariableProcessingException(ex.getMessage());
         }
     }
 
-    public int supplyAsInt(String name) throws PathVariableProcessingException {
-        String attr = supplyAsString(name);
-        Converter<String, Integer> converter = Integer::parseInt;
-        return converter.convert(attr);
-    }
-
     public long supplyAsLong(String name) throws PathVariableProcessingException {
-        String attr = supplyAsString(name);
-        Converter<String, Long> converter = Long::parseLong;
-        return converter.convert(attr);
+        try {
+            String attr = supplyAsString(name);
+            Converter<String, Long> converter = Long::parseLong;
+            return converter.convert(attr);
+        } catch (NumberFormatException ex) {
+            throw new PathVariableProcessingException(ex.getMessage());
+        }
     }
 }

@@ -64,10 +64,6 @@ public class PathVariableSupplierTest {
         when(req.getAttribute("long")).thenReturn("long");
 
         PathVariableSupplier pvs = new PathVariableSupplier(req);
-        pvs.supplyAsInt("long");
+        pvs.supplyAsLong("long");
     }
-
-
-
-
 }

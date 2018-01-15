@@ -6,7 +6,6 @@ import static org.junit.Assert.*;
 
 public class RequestPathTransformerTest {
 
-    private static final String TEMPLATE_REPLACEMENT = "(?<%s>[^/]+)";
     private static final String END_TEMPLATE = "(/)?";
 
     private static final String ROOT_PATH = "foo/";
@@ -17,7 +16,7 @@ public class RequestPathTransformerTest {
     @Test
     public void emptyRootPathWithoutVariableTest() {
 
-        RequestPathTransformer rpt = new RequestPathTransformer("");
+        RequestPathTransformer rpt = new RequestPathTransformer();
         String actual = rpt.transform(WITHOUT_VARIABLE_TEMPLATE);
 
         StringBuilder sb = new StringBuilder();
@@ -29,7 +28,7 @@ public class RequestPathTransformerTest {
     @Test
     public void emptyRootPathWithVariableTest() {
 
-        RequestPathTransformer rpt = new RequestPathTransformer("");
+        RequestPathTransformer rpt = new RequestPathTransformer();
         String actual = rpt.transform(WITH_VARIABLE_TEMPLATE);
 
         StringBuilder sb = new StringBuilder();
@@ -49,8 +48,4 @@ public class RequestPathTransformerTest {
 
         assertEquals(sb.toString(), actual);
     }
-
-
-
-
 }

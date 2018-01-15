@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.concurrent.Semaphore;
 
 
 @WebServlet(
@@ -29,11 +30,20 @@ public class ApiEntrypointServlet extends HttpServlet {
 
     private static final Logger LOGGER = Logger.getLogger(ApiEntrypointServlet.class);
 
+    private Semaphore semaphore;
+
     private Handler handler;
     private HandlerChain chain;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
+
+        semaphore = new Semaphore(4);
+
+        registerEndpoints();
+    }
+
+    private void registerEndpoints() {
          /*
          ==========================================================================
             Block API Handler and its Commands
@@ -70,8 +80,8 @@ public class ApiEntrypointServlet extends HttpServlet {
 
 
 
-       handler = blockBuilder.build();
-       chain = new HandlerChainImpl(asyncBuilder.build(), null);
+        handler = blockBuilder.build();
+        chain = new HandlerChainImpl(asyncBuilder.build(), null);
 
     }
 

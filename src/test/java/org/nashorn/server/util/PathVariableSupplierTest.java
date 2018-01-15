@@ -40,7 +40,34 @@ public class PathVariableSupplierTest {
         assertEquals("nashorn", pvs.supplyAsString("name"));
     }
 
-    
+    @Test(expected = PathVariableProcessingException.class)
+    public void nullStringVariableTest() throws PathVariableProcessingException {
+        HttpServletRequest req = mock(HttpServletRequest.class);
+        when(req.getAttribute("null")).thenReturn(null);
+
+        PathVariableSupplier pvs = new PathVariableSupplier(req);
+        pvs.supplyAsString("null");
+    }
+
+    @Test(expected = PathVariableProcessingException.class)
+    public void intNumberFormatExceptionTest() throws PathVariableProcessingException {
+        HttpServletRequest req = mock(HttpServletRequest.class);
+        when(req.getAttribute("int")).thenReturn("int");
+
+        PathVariableSupplier pvs = new PathVariableSupplier(req);
+        pvs.supplyAsInt("int");
+    }
+
+    @Test(expected = PathVariableProcessingException.class)
+    public void longNumberFormatExceptionTest() throws PathVariableProcessingException {
+        HttpServletRequest req = mock(HttpServletRequest.class);
+        when(req.getAttribute("long")).thenReturn("long");
+
+        PathVariableSupplier pvs = new PathVariableSupplier(req);
+        pvs.supplyAsInt("long");
+    }
+
+
 
 
 }

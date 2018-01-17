@@ -50,7 +50,7 @@ public class GetScriptByIdAsyncCommand implements Command {
 
         ScriptContent sc = new ScriptContent();
         sc.setScript(new ScriptUnitData(unit));
-        sc.setHref(Href.newBuilder(new StringBuilder(request.getRequestURL())).build());
+        sc.setHref(new Href.Builder(new StringBuilder(request.getRequestURL())).build());
 
         builder.addContent(sc);
 

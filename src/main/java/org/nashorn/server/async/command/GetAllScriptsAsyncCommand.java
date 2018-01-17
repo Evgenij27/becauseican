@@ -28,8 +28,8 @@ public class GetAllScriptsAsyncCommand implements Command {
         Set<ConcurrentMap.Entry<Long, ExecutionUnit>> units = InMemoryStorage.instance().getAllUnits();
 
         ScriptResponse.Builder respBuilder = new ScriptResponse.Builder();
-        HrefBuilder hrefBuilder
-                = Href.newBuilder(new StringBuilder(request.getRequestURL()));
+        Href.Builder hrefBuilder
+                = new Href.Builder(new StringBuilder(request.getRequestURL()));
 
         respBuilder.copyHeadersFrom(response);
         respBuilder.statusOK();

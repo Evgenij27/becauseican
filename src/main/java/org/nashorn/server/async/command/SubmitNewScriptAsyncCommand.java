@@ -10,7 +10,6 @@ import org.nashorn.server.core.NashornScriptCompiler;
 import org.nashorn.server.db.InMemoryStorage;
 import org.nashorn.server.util.ScriptEntity;
 import org.nashorn.server.util.response.Href;
-import org.nashorn.server.util.response.HrefBuilder;
 import org.nashorn.server.util.response.ScriptResponse;
 
 import javax.script.CompiledScript;
@@ -52,7 +51,7 @@ public class SubmitNewScriptAsyncCommand implements Command {
         long id = InMemoryStorage.instance().create(unit);
 
         response.setStatus(HttpServletResponse.SC_CREATED);
-        HrefBuilder hb = Href.newBuilder(new StringBuilder(request.getRequestURL()));
+        Href.Builder hb = new Href.Builder(new StringBuilder(request.getRequestURL()));
         response.setHeader("Location", hb.append(id).build().getSelf());
 
         ScriptResponse.Builder builder = new ScriptResponse.Builder();

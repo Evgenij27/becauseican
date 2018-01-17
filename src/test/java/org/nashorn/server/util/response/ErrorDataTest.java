@@ -3,32 +3,14 @@ package org.nashorn.server.util.response;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
 
 public class ErrorDataTest {
-
-    @Test
-    public void testCauseErrorData() {
-        ErrorData ed = mock(ErrorData.class);
-
-        when(ed.getCause()).thenReturn("Cause");
-        assertEquals("Cause", ed.getCause());
-        verify(ed).getCause();
-    }
-
-    @Test
-    public void testMessageErrorData() {
-        ErrorData ed = mock(ErrorData.class);
-
-        when(ed.getMessage()).thenReturn("Message");
-        assertEquals("Message", ed.getMessage());
-        verify(ed).getMessage();
-    }
 
     @Test
     public void testErrorDataConstructor() {
         ErrorData ed = new ErrorData(new Throwable("Cause : Message" ));
         assertEquals("Message", ed.getMessage());
+        assertEquals("Cause", ed.getCause());
     }
 
 

@@ -13,6 +13,7 @@ public class ErrorDataTest {
 
         when(ed.getCause()).thenReturn("Cause");
         assertEquals("Cause", ed.getCause());
+        verify(ed).getCause();
     }
 
     @Test
@@ -21,6 +22,7 @@ public class ErrorDataTest {
 
         when(ed.getMessage()).thenReturn("Message");
         assertEquals("Message", ed.getMessage());
+        verify(ed).getMessage();
     }
 
     @Test

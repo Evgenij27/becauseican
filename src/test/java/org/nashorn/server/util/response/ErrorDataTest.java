@@ -12,7 +12,7 @@ public class ErrorDataTest {
         ErrorData ed = mock(ErrorData.class);
 
         when(ed.getCause()).thenReturn("Cause");
-        verify(ed).getCause();
+        assertEquals("Cause", ed.getCause());
     }
 
     @Test
@@ -20,13 +20,13 @@ public class ErrorDataTest {
         ErrorData ed = mock(ErrorData.class);
 
         when(ed.getMessage()).thenReturn("Message");
-        verify(ed).getMessage();
+        assertEquals("Message", ed.getMessage());
     }
 
     @Test
     public void testErrorDataConstructor() {
-        ErrorData ed = new ErrorData(new Throwable("Throwable", new Throwable()));
-        assertEquals("Throwable", ed.getMessage());
+        ErrorData ed = new ErrorData(new Throwable("Cause : Message" ));
+        assertEquals("Message", ed.getMessage());
     }
 
 

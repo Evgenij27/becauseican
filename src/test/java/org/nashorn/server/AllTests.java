@@ -2,13 +2,15 @@ package org.nashorn.server;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-import org.nashorn.server.util.PathVariableSupplierTest;
-import org.nashorn.server.util.RequestPathTransformerTest;
-import org.nashorn.server.util.ScriptEntityTest;
+import org.nashorn.server.async.command.AsyncCommandSuite;
+import org.nashorn.server.util.UtilSuite;
+import org.nashorn.server.util.response.ResponseSuite;
 
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    PathVariableSupplierTest.class, RequestPathTransformerTest.class, ScriptEntityTest.class
+        AsyncCommandSuite.class,
+        UtilSuite.class,
+        ResponseSuite.class
 })
 public class AllTests {}

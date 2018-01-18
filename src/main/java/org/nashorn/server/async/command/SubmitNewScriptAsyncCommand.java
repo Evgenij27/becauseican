@@ -1,6 +1,5 @@
 package org.nashorn.server.async.command;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.Logger;
 import org.nashorn.server.Command;
 import org.nashorn.server.CommandExecutionException;
@@ -8,7 +7,7 @@ import org.nashorn.server.core.ExecutionUnit;
 import org.nashorn.server.core.ExecutionUnitPool;
 import org.nashorn.server.core.NashornScriptCompiler;
 import org.nashorn.server.db.InMemoryStorage;
-import org.nashorn.server.util.ScriptEntity;
+import org.nashorn.server.util.JsonSerDesEngine;
 import org.nashorn.server.util.response.Href;
 import org.nashorn.server.util.response.ScriptResponse;
 
@@ -18,7 +17,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.Reader;
 
 public class SubmitNewScriptAsyncCommand implements Command {
 
@@ -30,7 +28,7 @@ public class SubmitNewScriptAsyncCommand implements Command {
 
         String script;
         try {
-            script = getScriptEntity(request.getReader()).getScript();
+            script = JsonSerDesEngine.readEntity(request.getReader()).getScript();
         } catch (IOException ex) {
             LOGGER.error(ex);
             throw new CommandExecutionException("Error during parsing JSON.");
@@ -60,10 +58,5 @@ public class SubmitNewScriptAsyncCommand implements Command {
         builder.noContent();
 
         return builder.build();
-    }
-
-    private ScriptEntity getScriptEntity(Reader reader) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.readValue(reader, ScriptEntity.class);
     }
 }

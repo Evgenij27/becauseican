@@ -1,23 +1,22 @@
-package org.nashorn.server.async.command;
+package org.nashorn.server.command.async;
 
 import org.apache.log4j.Logger;
-
-import org.nashorn.server.Command;
+import org.nashorn.server.command.AbstractCommand;
 import org.nashorn.server.CommandExecutionException;
 import org.nashorn.server.core.ExecutionUnit;
 import org.nashorn.server.db.InMemoryStorage;
-import org.nashorn.server.util.JsonSerDesEngine;
-import org.nashorn.server.util.response.*;
+import org.nashorn.server.util.response.Href;
+import org.nashorn.server.util.response.ScriptContent;
+import org.nashorn.server.util.response.ScriptResponse;
+import org.nashorn.server.util.response.ScriptUnitData;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
-public class GetAllScriptsAsyncCommand implements Command {
+public class GetAllScriptsAsyncCommand extends AbstractCommand {
 
     private static final Logger LOGGER = Logger.getLogger(GetAllScriptsAsyncCommand.class);
 
@@ -45,18 +44,6 @@ public class GetAllScriptsAsyncCommand implements Command {
 
             respBuilder.addContent(content);
         }
-
-
-        try (final PrintWriter writer = response.getWriter()) {
-            if (writer.checkError()) {
-                LOGGER.error("Client disconnected");
-                throw new IOException("Client disconnected");
-            }
-            writer.print(JsonSerDesEngine.writeEntity(respBuilder.build()));
-        } catch (IOException ex) {
-            throw new ServletException(ex);
-        }
-
         return respBuilder.build();
     }
 }

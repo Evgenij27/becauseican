@@ -1,4 +1,6 @@
-package org.nashorn.server;
+package org.nashorn.server.command;
+
+import org.nashorn.server.CommandExecutionException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;

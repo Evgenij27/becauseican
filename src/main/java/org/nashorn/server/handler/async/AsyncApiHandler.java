@@ -1,6 +1,6 @@
 package org.nashorn.server.handler.async;
 
-import org.nashorn.server.Command;
+import org.nashorn.server.command.Command;
 import org.nashorn.server.CommandExecutionException;
 import org.nashorn.server.CommandNotFoundException;
 import org.nashorn.server.handler.AbstractHandler;

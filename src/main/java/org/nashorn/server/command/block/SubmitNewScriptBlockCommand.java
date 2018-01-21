@@ -1,43 +1,34 @@
-package org.nashorn.server.block.command;
-
-import javax.script.*;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Reader;
+package org.nashorn.server.command.block;
 
 import org.apache.log4j.Logger;
-import org.nashorn.server.Command;
+import org.nashorn.server.command.AbstractCommand;
 import org.nashorn.server.CommandExecutionException;
 import org.nashorn.server.core.ExecutionUnit;
 import org.nashorn.server.core.ExecutionUnitPool;
-import org.nashorn.server.core.NashornScriptCompiler;
 import org.nashorn.server.util.JsonSerDesEngine;
 import org.nashorn.server.util.response.ScriptContent;
 import org.nashorn.server.util.response.ScriptResponse;
 import org.nashorn.server.util.response.ScriptUnitData;
 
-public class SubmitNewScriptBlockCommand implements Command {
+import javax.script.CompiledScript;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
 
-    private static final  Logger logger = Logger.getLogger(SubmitNewScriptBlockCommand.class);
+public class SubmitNewScriptBlockCommand extends AbstractCommand {
+
+    private static final  Logger LOGGER = Logger.getLogger(SubmitNewScriptBlockCommand.class);
 
     @Override
     public Object execute(HttpServletRequest request, HttpServletResponse response)
             throws CommandExecutionException, ServletException {
 
-        Reader reader;
-        try {
-            reader = request.getReader();
-        } catch (IOException e) {
-            logger.error(e);
-            throw new ServletException(e);
-        }
+        String script = readScriptEntity(getReader(request)).getScript();
+        LOGGER.info("SCRIPT : " + script);
 
-        String script = getScriptFromRequest(reader);
-
-        CompiledScript compiledScript = compiledScript(script);
+        CompiledScript compiledScript = compileScript(script);
 
         ExecutionUnit unit = ExecutionUnitPool.instance().evalAsync(compiledScript);
 
@@ -60,35 +51,14 @@ public class SubmitNewScriptBlockCommand implements Command {
                 String jsonResp = JsonSerDesEngine.writeEntity(builder.build());
                 writer.write(jsonResp);
                 
-                logger.info("Unit is Done? " + unit.isDone());
+                LOGGER.info("Unit is Done? " + unit.isDone());
             } while ((!unit.isDone()));
-            logger.info("WRITTING FINISHED");
+            LOGGER.info("WRITING FINISHED");
         } catch (IOException ex) {
             throw new ServletException(ex);
         }
 
         return null;
-    }
-
-    private String getScriptFromRequest(Reader reader) throws CommandExecutionException {
-        String script;
-        try {
-            script = JsonSerDesEngine.readEntity(reader).getScript();
-        } catch (IOException ex) {
-            throw new CommandExecutionException(String.format("Error during parsing JSON : %s", ex.getMessage()));
-        }
-        return script;
-    }
-
-    private CompiledScript compiledScript(String script) throws ServletException {
-        NashornScriptCompiler compiler = new NashornScriptCompiler();
-        CompiledScript compiledScript;
-        try {
-            compiledScript = compiler.compile(script);
-        } catch (ScriptException ex) {
-            throw new ServletException(ex);
-        }
-        return compiledScript;
     }
 
     private void sleep(long millis) throws ServletException {

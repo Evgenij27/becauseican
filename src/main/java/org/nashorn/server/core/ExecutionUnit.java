@@ -1,5 +1,7 @@
 package org.nashorn.server.core;
 
+import java.io.StringWriter;
+
 public interface ExecutionUnit {
 
     boolean isDone();
@@ -10,8 +12,8 @@ public interface ExecutionUnit {
 
     void cancel(boolean mayInterruptIfRunning);
 
-    String getResultOutput();
+    StringWriter getResultOutput();
 
-    String getErrorOutput();
+    StringWriter getErrorOutput();
 
 }

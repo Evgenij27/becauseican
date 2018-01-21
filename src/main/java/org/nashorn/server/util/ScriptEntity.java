@@ -2,7 +2,9 @@ package org.nashorn.server.util;
 
 public class ScriptEntity {
 
-    private final String script;
+    private String script;
+
+    public ScriptEntity() {}
 
     public ScriptEntity(String script) {
         this.script = script;

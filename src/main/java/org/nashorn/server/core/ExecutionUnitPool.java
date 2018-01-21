@@ -16,14 +16,24 @@ public class ExecutionUnitPool {
 
     private static class Holder {
         private Holder() {}
-        private static final ExecutionUnitPool INSTANCE = new ExecutionUnitPool();
+        private static final ExecutionUnitPool INSTANCE = new ExecutionUnitPool(poolSize);
     }
 
-    private final ExecutorService executor = Executors.newFixedThreadPool(3);
+    private static final int DEFAULT_POOL_SIZE = 3;
 
-    private ExecutionUnitPool() {}
+    private static int poolSize = DEFAULT_POOL_SIZE;
 
-    public ExecutionUnit evalAsync(CompiledScript script) {
+    public static void setPoolSize(int nThreads) {
+        poolSize = nThreads;
+    }
+
+    private final ExecutorService executor;
+
+    private ExecutionUnitPool(int nThreads) {
+        executor = Executors.newFixedThreadPool(nThreads);
+    }
+
+    public ScriptExecutionUnit evalAsync(CompiledScript script) {
         return new ScriptExecutionUnit(script, executor);
     }
 }

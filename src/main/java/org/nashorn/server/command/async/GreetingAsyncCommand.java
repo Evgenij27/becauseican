@@ -1,6 +1,6 @@
-package org.nashorn.server.async.command;
+package org.nashorn.server.command.async;
 
-import org.nashorn.server.Command;
+import org.nashorn.server.command.AbstractCommand;
 import org.nashorn.server.CommandExecutionException;
 import org.nashorn.server.util.PathVariableProcessingException;
 import org.nashorn.server.util.PathVariableSupplier;
@@ -10,7 +10,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class GreetingAsyncCommand implements Command {
+public class GreetingAsyncCommand extends AbstractCommand {
 
     @Override
     public Object execute(HttpServletRequest request, HttpServletResponse response)
@@ -18,7 +18,7 @@ public class GreetingAsyncCommand implements Command {
 
         PathVariableSupplier pvs = new PathVariableSupplier(request);
 
-        String name = null;
+        String name;
         try {
             name = pvs.supplyAsString("name");
         } catch (PathVariableProcessingException ex) {

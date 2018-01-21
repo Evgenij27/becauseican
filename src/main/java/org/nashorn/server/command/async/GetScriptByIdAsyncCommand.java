@@ -1,14 +1,14 @@
-package org.nashorn.server.async.command;
+package org.nashorn.server.command.async;
 
 import org.apache.log4j.Logger;
-import org.nashorn.server.Command;
+import org.nashorn.server.command.AbstractCommand;
 import org.nashorn.server.CommandExecutionException;
 import org.nashorn.server.core.ExecutionUnit;
 import org.nashorn.server.db.InMemoryStorage;
 import org.nashorn.server.db.UnitNotFoundException;
 import org.nashorn.server.util.PathVariableProcessingException;
-import org.nashorn.server.util.response.Href;
 import org.nashorn.server.util.PathVariableSupplier;
+import org.nashorn.server.util.response.Href;
 import org.nashorn.server.util.response.ScriptContent;
 import org.nashorn.server.util.response.ScriptResponse;
 import org.nashorn.server.util.response.ScriptUnitData;
@@ -17,7 +17,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class GetScriptByIdAsyncCommand implements Command {
+public class GetScriptByIdAsyncCommand extends AbstractCommand {
 
     private static final Logger LOGGER = Logger.getLogger(GetScriptByIdAsyncCommand.class);
 
@@ -27,7 +27,7 @@ public class GetScriptByIdAsyncCommand implements Command {
 
         PathVariableSupplier pvs = new PathVariableSupplier(request);
 
-        long id = 0;
+        long id;
         try {
             id = pvs.supplyAsLong("id");
         } catch (PathVariableProcessingException ex) {
@@ -35,7 +35,7 @@ public class GetScriptByIdAsyncCommand implements Command {
             throw new CommandExecutionException(ex.getMessage());
         }
 
-        ExecutionUnit unit = null;
+        ExecutionUnit unit;
         try {
             unit = InMemoryStorage.instance().read(id);
         } catch (UnitNotFoundException ex) {

@@ -1,6 +1,6 @@
 package org.nashorn.server.handler;
 
-import org.nashorn.server.Command;
+import org.nashorn.server.command.Command;
 import org.nashorn.server.util.PathTransformer;
 import org.nashorn.server.util.RequestPathTransformer;
 

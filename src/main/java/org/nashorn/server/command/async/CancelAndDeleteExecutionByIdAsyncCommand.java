@@ -1,6 +1,6 @@
-package org.nashorn.server.async.command;
+package org.nashorn.server.command.async;
 
-import org.nashorn.server.Command;
+import org.nashorn.server.command.AbstractCommand;
 import org.nashorn.server.CommandExecutionException;
 import org.nashorn.server.util.PathVariableProcessingException;
 import org.nashorn.server.db.UnitNotFoundException;
@@ -13,20 +13,20 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class CancelAndDeleteExecutionByIdAsyncCommand implements Command {
+public class CancelAndDeleteExecutionByIdAsyncCommand extends AbstractCommand {
     @Override
     public Object execute(HttpServletRequest request, HttpServletResponse response)
             throws CommandExecutionException, ServletException {
 
         PathVariableSupplier pvs = new PathVariableSupplier(request);
-        long id = 0;
+        long id;
         try {
             id = pvs.supplyAsLong("id");
         } catch (PathVariableProcessingException ex) {
             throw new CommandExecutionException(ex.getMessage());
         }
 
-        ExecutionUnit unit = null;
+        ExecutionUnit unit;
         try {
             unit = InMemoryStorage.instance().read(id);
             InMemoryStorage.instance().delete(id);

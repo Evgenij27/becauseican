@@ -1,24 +1,20 @@
-package org.nashorn.server.async.command;
+package org.nashorn.server.command.async;
 
 import org.apache.log4j.Logger;
-import org.nashorn.server.Command;
+import org.nashorn.server.command.AbstractCommand;
 import org.nashorn.server.CommandExecutionException;
 import org.nashorn.server.core.ExecutionUnit;
 import org.nashorn.server.core.ExecutionUnitPool;
-import org.nashorn.server.core.NashornScriptCompiler;
 import org.nashorn.server.db.InMemoryStorage;
-import org.nashorn.server.util.JsonSerDesEngine;
 import org.nashorn.server.util.response.Href;
 import org.nashorn.server.util.response.ScriptResponse;
 
 import javax.script.CompiledScript;
-import javax.script.ScriptException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
-public class SubmitNewScriptAsyncCommand implements Command {
+public class SubmitNewScriptAsyncCommand extends AbstractCommand {
 
     private static final Logger LOGGER = Logger.getLogger(SubmitNewScriptAsyncCommand.class);
 
@@ -26,23 +22,8 @@ public class SubmitNewScriptAsyncCommand implements Command {
     public Object execute(HttpServletRequest request, HttpServletResponse response)
             throws CommandExecutionException, ServletException {
 
-        String script;
-        try {
-            script = JsonSerDesEngine.readEntity(request.getReader()).getScript();
-        } catch (IOException ex) {
-            LOGGER.error(ex);
-            throw new CommandExecutionException("Error during parsing JSON.");
-        }
-
-        NashornScriptCompiler compiler = new NashornScriptCompiler();
-
-        CompiledScript compiledScript;
-        try {
-            compiledScript = compiler.compile(script);
-        } catch (ScriptException ex) {
-            LOGGER.error(ex);
-            throw new CommandExecutionException(String.format("Compilation error : %s", ex.getMessage()));
-        }
+        String script = readScriptEntity(getReader(request)).getScript();
+        CompiledScript compiledScript = compileScript(script);
 
         ExecutionUnit unit = ExecutionUnitPool.instance().evalAsync(compiledScript);
 

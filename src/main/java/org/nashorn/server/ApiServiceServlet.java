@@ -1,9 +1,8 @@
 package org.nashorn.server;
 
 import org.apache.log4j.Logger;
-import org.nashorn.server.async.command.*;
-import org.nashorn.server.block.command.SubmitNewScriptBlockCommand;
-import org.nashorn.server.block.command.TestBlockCommand;
+import org.nashorn.server.command.block.SubmitNewScriptBlockCommand;
+import org.nashorn.server.command.async.*;
 import org.nashorn.server.handler.Handler;
 import org.nashorn.server.handler.HandlerBuilder;
 import org.nashorn.server.handler.HandlerChain;
@@ -19,16 +18,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.concurrent.Semaphore;
-
-
 @WebServlet(
         urlPatterns = {"/api/*"},
-        name = "ApiEntrypointServlet",
+        name = "ApiServiceServlet",
         loadOnStartup = 1
 )
-public class ApiEntrypointServlet extends HttpServlet {
+public class ApiServiceServlet extends HttpServlet {
 
-    private static final Logger LOGGER = Logger.getLogger(ApiEntrypointServlet.class);
+    private static final Logger LOGGER = Logger.getLogger(ApiServiceServlet.class);
 
     private Semaphore semaphore;
 
@@ -50,7 +47,6 @@ public class ApiEntrypointServlet extends HttpServlet {
          ==========================================================================
          */
         HandlerBuilder blockBuilder = BlockApiHandler.newBuilder("/nashorn/api/v0.9/block");
-        blockBuilder.getEndpoint("/test", new TestBlockCommand());
          /*
             POST Endpoints
          */

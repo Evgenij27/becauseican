@@ -22,13 +22,17 @@ public class SubmitNewScriptAsyncCommand extends AbstractCommand {
     public Object execute(HttpServletRequest request, HttpServletResponse response)
             throws CommandExecutionException, ServletException {
 
+        LOGGER.info("START COMAND");
+        LOGGER.info("GET SCRIPT");
         String script = readScriptEntity(getReader(request)).getScript();
+        LOGGER.info("COMPILE SCRIPT");
         CompiledScript compiledScript = compileScript(script);
-
+        LOGGER.info("EVAL ASYNC");
         ExecutionUnit unit = ExecutionUnitPool.instance().evalAsync(compiledScript);
-
+        LOGGER.info("SAVE");
         long id = InMemoryStorage.instance().create(unit);
 
+        LOGGER.info("BUILD RESPONSE");
         response.setStatus(HttpServletResponse.SC_CREATED);
         Href.Builder hb = new Href.Builder(new StringBuilder(request.getRequestURL()));
         response.setHeader("Location", hb.append(id).build().getSelf());

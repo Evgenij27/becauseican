@@ -10,14 +10,13 @@ import org.nashorn.server.handler.HandlerChainImpl;
 import org.nashorn.server.handler.async.AsyncApiHandler;
 import org.nashorn.server.handler.block.BlockApiHandler;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.concurrent.Semaphore;
+
 @WebServlet(
         urlPatterns = {"/api/*"},
         name = "ApiServiceServlet",
@@ -27,21 +26,11 @@ public class ApiServiceServlet extends HttpServlet {
 
     private static final Logger LOGGER = Logger.getLogger(ApiServiceServlet.class);
 
-    private Semaphore semaphore;
+    private static final Handler HANDLER;
+    private static final HandlerChain CHAIN;
 
-    private Handler handler;
-    private HandlerChain chain;
-
-    @Override
-    public void init(ServletConfig config) throws ServletException {
-
-        semaphore = new Semaphore(4);
-
-        registerEndpoints();
-    }
-
-    private void registerEndpoints() {
-         /*
+    static {
+        /*
          ==========================================================================
             Block API Handler and its Commands
          ==========================================================================
@@ -74,11 +63,8 @@ public class ApiServiceServlet extends HttpServlet {
          */
         asyncBuilder.deleteEndpoint("/script/:id",     new CancelAndDeleteExecutionByIdAsyncCommand());
 
-
-
-        handler = blockBuilder.build();
-        chain = new HandlerChainImpl(asyncBuilder.build(), null);
-
+        HANDLER = blockBuilder.build();
+        CHAIN = new HandlerChainImpl(asyncBuilder.build(), null);
     }
 
     @Override
@@ -91,7 +77,7 @@ public class ApiServiceServlet extends HttpServlet {
         resp.setContentType("application/json");
 
         try {
-            handler.handle(req, resp, chain);
+            HANDLER.handle(req, resp, CHAIN);
         } catch (ServletException ex) {
             LOGGER.error(ex);
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

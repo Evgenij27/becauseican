@@ -19,6 +19,7 @@ public abstract class AbstractCommand implements Command {
     private static final Logger LOGGER = Logger.getLogger(AbstractCommand.class);
 
     protected CompiledScript compileScript(String script) throws CommandExecutionException {
+        LOGGER.info("COMPILING");
         try {
             return new NashornScriptCompiler().compile(script);
         } catch (ScriptException ex) {
@@ -28,6 +29,7 @@ public abstract class AbstractCommand implements Command {
     }
 
     protected ScriptEntity readScriptEntity(Reader reader) throws CommandExecutionException {
+        LOGGER.info("GETTING SCRIPT ENTITY");
         try {
             return  JsonSerDesEngine.readEntity(reader);
         } catch (IOException ex) {
@@ -37,6 +39,7 @@ public abstract class AbstractCommand implements Command {
     }
 
     protected BufferedReader getReader(HttpServletRequest req) throws ServletException {
+        LOGGER.info("GETTING READER");
         try {
             return req.getReader();
         } catch (IOException ex) {

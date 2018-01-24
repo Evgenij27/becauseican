@@ -12,11 +12,6 @@ public class NashornScriptCompiler {
         return compilable.compile(script);
     }
 
-    public CompiledScript compile(Reader reader) throws ScriptException {
-        Compilable compilable = castToCompilable(newEngine(ENGINE_NAME));
-        return compilable.compile(reader);
-    }
-
     private ScriptEngine newEngine(String engineName) {
         return new ScriptEngineManager().getEngineByName(engineName);
     }

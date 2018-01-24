@@ -22,9 +22,9 @@ import java.io.IOException;
         name = "ApiServiceServlet",
         loadOnStartup = 1
 )
-public class ApiServiceServlet extends HttpServlet {
+public class ApiGatewayServlet extends HttpServlet {
 
-    private static final Logger LOGGER = Logger.getLogger(ApiServiceServlet.class);
+    private static final Logger LOGGER = Logger.getLogger(ApiGatewayServlet.class);
 
     private static final Handler HANDLER;
     private static final HandlerChain CHAIN;
@@ -35,7 +35,7 @@ public class ApiServiceServlet extends HttpServlet {
             Block API Handler and its Commands
          ==========================================================================
          */
-        HandlerBuilder blockBuilder = BlockApiHandler.newBuilder("/nashorn/api/v0.9/block");
+       final HandlerBuilder blockBuilder = BlockApiHandler.newBuilder("/nashorn/api/v0.9/block");
          /*
             POST Endpoints
          */
@@ -46,7 +46,7 @@ public class ApiServiceServlet extends HttpServlet {
             Async API Handler and its Commands
         ============================================================================
          */
-        HandlerBuilder asyncBuilder = AsyncApiHandler.newBuilder("/nashorn/api/v0.9/async");
+        final HandlerBuilder asyncBuilder = AsyncApiHandler.newBuilder("/nashorn/api/v0.9/async");
         /*
             GET Endpoints
          */

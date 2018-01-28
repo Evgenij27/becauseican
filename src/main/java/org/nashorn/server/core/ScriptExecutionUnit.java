@@ -31,8 +31,10 @@ public class ScriptExecutionUnit implements ExecutionUnit {
                 script.eval(prepareContext());
                 LOGGER.info("END EVAL SCRIPT");
             } catch (ScriptException ex) {
-                throwable = ex;
-                finishedExceptionally.set(true);
+                synchronized (this) {
+                    throwable = ex;
+                    finishedExceptionally.set(true);
+                }
             }
         });
     }

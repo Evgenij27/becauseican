@@ -34,10 +34,32 @@ public class ScriptExecutionUnitTest {
 
         assertTrue(unit.isDone());
     }
-    
+
+    @Test
+    public void testCancellation() throws ScriptException {
+        NashornScriptCompiler compiler = new NashornScriptCompiler();
+        CompiledScript script = compiler.compile("var i = 10; while(i>0) {print('Hello!');}");
+
+        ScriptExecutionUnit unit = new ScriptExecutionUnit(script, executor);
+        assertFalse(unit.isDone());
+        sleep();
+        unit.cancel(true);
+        assertTrue(unit.isDone());
+    }
+
+    @Test
+    public void testExecution() throws ScriptException {
+        NashornScriptCompiler compiler = new NashornScriptCompiler();
+        CompiledScript script = compiler.compile("print('Hello JS!');");
+
+        ScriptExecutionUnit unit = new ScriptExecutionUnit(script, executor);
+        sleep();
+        assertTrue((!unit.finishedExceptionally() && unit.isDone()));
+    }
+
     private static void sleep() {
         try {
-            Thread.sleep(1000 * 3);
+            Thread.sleep(1000 );
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }

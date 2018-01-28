@@ -10,19 +10,22 @@ import static org.junit.Assert.*;
 
 public class NashornScriptCompilerTest {
 
-    private NashornScriptCompiler compiler = mock(NashornScriptCompiler.class);
-
     @Test
     public void testCompilation() throws ScriptException {
 
-        when(compiler.compile(isA(String.class))).thenReturn(isA(CompiledScript.class));
-        assertEquals(isA(CompiledScript.class), compiler.compile(isA(String.class)));
+        NashornScriptCompiler compiler = new NashornScriptCompiler();
+        CompiledScript script = compiler.compile("print('Hello!');");
+        assertNotNull(script);
+
     }
 
     @Test(expected = ScriptException.class)
     public void testExceptionCase() throws ScriptException {
-        when(compiler.compile(isA(String.class))).thenThrow(isA(ScriptException.class));
-        compiler.compile(isA(String.class));
+
+        NashornScriptCompiler compiler = mock(NashornScriptCompiler.class);
+
+        when(compiler.compile(anyString())).thenThrow(new ScriptException("Compilation Exception"));
+        compiler.compile(anyString());
     }
 
 

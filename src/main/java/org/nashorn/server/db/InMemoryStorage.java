@@ -9,9 +9,11 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class InMemoryStorage implements DAO {
 
+    private static final int CAPACITY_LIMIT = 50;
+
     private final AtomicLong counter = new AtomicLong();
 
-    private final ConcurrentMap<Long, ExecutionUnit> storage = new ConcurrentHashMap<>();
+    private final ConcurrentMap<Long, ExecutionUnit> storage = new ConcurrentHashMap<>(CAPACITY_LIMIT);
 
     private InMemoryStorage() {}
 
@@ -24,6 +26,12 @@ public class InMemoryStorage implements DAO {
         private static final InMemoryStorage INSTANCE = new InMemoryStorage();
     }
 
+    private void checkContainsKeyOrThrow(long id) throws  UnitNotFoundException {
+        if (!storage.containsKey(id)) {
+            throw new UnitNotFoundException(String.format("Unit with this id %d not found", id));
+        }
+    }
+
     @Override
     public long create(ExecutionUnit e) {
         long id = counter.incrementAndGet();
@@ -33,9 +41,7 @@ public class InMemoryStorage implements DAO {
 
     @Override
     public ExecutionUnit read(long id) throws UnitNotFoundException {
-        if (!storage.containsKey(id)) {
-            throw new UnitNotFoundException(String.format("Unit with this id %d not found", id));
-        }
+        checkContainsKeyOrThrow(id);
         return storage.get(id);
     }
 
@@ -46,9 +52,7 @@ public class InMemoryStorage implements DAO {
 
     @Override
     public void delete(long id) throws UnitNotFoundException {
-        if (!storage.containsKey(id)) {
-            throw new UnitNotFoundException(String.format("Unit with this id %d not found", id));
-        }
+        checkContainsKeyOrThrow(id);
         storage.remove(id);
     }
 

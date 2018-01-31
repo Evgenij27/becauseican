@@ -2,6 +2,8 @@ package org.nashorn.server.command;
 
 import org.apache.log4j.Logger;
 import org.nashorn.server.CommandExecutionException;
+import org.nashorn.server.HttpRequestEntity;
+import org.nashorn.server.HttpResponseEntity;
 import org.nashorn.server.core.NashornScriptCompiler;
 import org.nashorn.server.util.JsonSerDesEngine;
 import org.nashorn.server.util.ScriptEntity;
@@ -9,7 +11,7 @@ import org.nashorn.server.util.ScriptEntity;
 import javax.script.CompiledScript;
 import javax.script.ScriptException;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -38,7 +40,7 @@ public abstract class AbstractCommand implements Command {
         }
     }
 
-    protected BufferedReader getReader(HttpServletRequest req) throws ServletException {
+    protected BufferedReader getReader(HttpRequestEntity req) throws ServletException {
         LOGGER.info("GETTING READER");
         try {
             return req.getReader();
@@ -47,4 +49,7 @@ public abstract class AbstractCommand implements Command {
             throw new ServletException(ex);
         }
     }
+
+    public abstract Object execute(HttpRequestEntity req, HttpResponseEntity resp)
+            throws CommandExecutionException, ServletException;
 }

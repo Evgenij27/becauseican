@@ -1,5 +1,7 @@
 package org.nashorn.server.handler.block;
 
+import org.nashorn.server.HttpRequestEntity;
+import org.nashorn.server.HttpResponseEntity;
 import org.nashorn.server.command.Command;
 import org.nashorn.server.CommandExecutionException;
 import org.nashorn.server.CommandNotFoundException;
@@ -10,7 +12,6 @@ import org.nashorn.server.util.response.ScriptResponse;
 import org.nashorn.server.util.response.ResponseMessage;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public class BlockApiHandler extends AbstractHandler {
@@ -24,7 +25,7 @@ public class BlockApiHandler extends AbstractHandler {
     }
 
     @Override
-    public void handle(HttpServletRequest req, HttpServletResponse resp, HandlerChain chain)
+    public void handle(HttpRequestEntity req, HttpResponseEntity resp, HandlerChain chain)
             throws ServletException {
         if (findMatch(rootPath, req.getRequestURI())) {
             try {

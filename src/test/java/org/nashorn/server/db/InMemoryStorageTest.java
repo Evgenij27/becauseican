@@ -2,7 +2,6 @@ package org.nashorn.server.db;
 
 import org.junit.*;
 
-
 import org.nashorn.server.core.ExecutionUnit;
 import org.nashorn.server.core.ExecutionUnitPool;
 import org.nashorn.server.core.NashornScriptCompiler;
@@ -34,7 +33,7 @@ public class InMemoryStorageTest {
     }
 
     @After
-    public void teardown() throws UnitNotFoundException {
+    public void clear() throws UnitNotFoundException {
         Set<ConcurrentMap.Entry<Long, ExecutionUnit>> units = db.getAllUnits();
         units.forEach(entry -> {
             try {
@@ -99,5 +98,13 @@ public class InMemoryStorageTest {
         long id2 = db.create(newUnit());
 
         assertEquals(1L, (id2 - id1));
+    }
+
+    @Test
+    public void testUpdate() throws UnitNotFoundException {
+        ScriptExecutionUnit u = newUnit();
+        long id = db.create(newUnit());
+        db.update(id, u);
+        assertSame(u, db.read(id));
     }
 }

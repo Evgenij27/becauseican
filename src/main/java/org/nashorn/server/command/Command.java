@@ -1,13 +1,13 @@
 package org.nashorn.server.command;
 
 import org.nashorn.server.CommandExecutionException;
+import org.nashorn.server.HttpRequestEntity;
+import org.nashorn.server.HttpResponseEntity;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 public interface Command {
 
-    Object execute(HttpServletRequest request, HttpServletResponse response)
+    Object execute(HttpRequestEntity req, HttpResponseEntity resp)
             throws CommandExecutionException, ServletException;
 }

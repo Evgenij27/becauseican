@@ -1,10 +1,11 @@
 package org.nashorn.server.handler;
 
+import org.nashorn.server.HttpRequestEntity;
+import org.nashorn.server.HttpResponseEntity;
+
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 public interface HandlerChain {
 
-    void handle(HttpServletRequest req, HttpServletResponse resp) throws ServletException;
+    void handle(HttpRequestEntity req, HttpResponseEntity resp) throws ServletException;
 }

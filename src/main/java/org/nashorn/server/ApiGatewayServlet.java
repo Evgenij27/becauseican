@@ -50,7 +50,6 @@ public class ApiGatewayServlet extends HttpServlet {
         /*
             GET Endpoints
          */
-        asyncBuilder.getEndpoint("/greetings/:name", new GreetingAsyncCommand());
         asyncBuilder.getEndpoint("/script/:id",      new GetScriptByIdAsyncCommand());
         asyncBuilder.getEndpoint("/script",          new GetAllScriptsAsyncCommand());
         /*
@@ -77,7 +76,9 @@ public class ApiGatewayServlet extends HttpServlet {
         resp.setContentType("application/json");
 
         try {
-            HANDLER.handle(req, resp, CHAIN);
+            HttpRequestEntity reqEntity = new HttpRequestEntity(req);
+            HttpResponseEntity respEntity = new HttpResponseEntity(resp);
+            HANDLER.handle(reqEntity, respEntity, CHAIN);
         } catch (ServletException ex) {
             LOGGER.error(ex);
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

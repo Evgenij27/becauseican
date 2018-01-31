@@ -1,6 +1,8 @@
 package org.nashorn.server.command.block;
 
 import org.apache.log4j.Logger;
+import org.nashorn.server.HttpRequestEntity;
+import org.nashorn.server.HttpResponseEntity;
 import org.nashorn.server.command.AbstractCommand;
 import org.nashorn.server.CommandExecutionException;
 import org.nashorn.server.core.ExecutionUnit;
@@ -12,8 +14,6 @@ import org.nashorn.server.util.response.ScriptUnitData;
 
 import javax.script.CompiledScript;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -22,7 +22,7 @@ public class SubmitNewScriptBlockCommand extends AbstractCommand {
     private static final  Logger LOGGER = Logger.getLogger(SubmitNewScriptBlockCommand.class);
 
     @Override
-    public Object execute(HttpServletRequest request, HttpServletResponse response)
+    public Object execute(HttpRequestEntity request, HttpResponseEntity response)
             throws CommandExecutionException, ServletException {
 
         String script = readScriptEntity(getReader(request)).getScript();
@@ -39,7 +39,6 @@ public class SubmitNewScriptBlockCommand extends AbstractCommand {
         try (final PrintWriter writer = response.getWriter()) {
             do {
                 sleep(1000);
-                checkWriter(writer);
 
                 ScriptUnitData sud = new ScriptUnitData(unit);
 

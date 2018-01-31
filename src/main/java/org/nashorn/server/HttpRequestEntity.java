@@ -1,17 +1,18 @@
-package org.nashorn.server.util;
+package org.nashorn.server;
+
+import org.nashorn.server.util.PathVariableProcessingException;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 
-public class PathVariableSupplier {
+public class HttpRequestEntity extends HttpServletRequestWrapper {
 
-    private final HttpServletRequest request;
-
-    public PathVariableSupplier(HttpServletRequest request) {
-        this.request = request;
+    public HttpRequestEntity(HttpServletRequest request) {
+        super(request);
     }
 
     private Object getOrThrow(String name) throws PathVariableProcessingException {
-        Object attr = request.getAttribute(name);
+        Object attr = getRequest().getAttribute(name);
         if (attr == null) {
             throw new PathVariableProcessingException(String.format("Path variable %s not found", name));
         }
@@ -19,15 +20,12 @@ public class PathVariableSupplier {
     }
 
     public String supplyAsString(String name) throws PathVariableProcessingException {
-        Converter<Object, String> converter = String::valueOf;
-        return converter.convert(getOrThrow(name));
+        return String.valueOf(getOrThrow(name));
     }
 
     public int supplyAsInt(String name) throws PathVariableProcessingException {
         try {
-            String attr = supplyAsString(name);
-            Converter<String, Integer> converter = Integer::parseInt;
-            return converter.convert(attr);
+            return Integer.parseInt(supplyAsString(name));
         } catch (NumberFormatException ex) {
             throw new PathVariableProcessingException(ex.getMessage());
         }
@@ -35,9 +33,7 @@ public class PathVariableSupplier {
 
     public long supplyAsLong(String name) throws PathVariableProcessingException {
         try {
-            String attr = supplyAsString(name);
-            Converter<String, Long> converter = Long::parseLong;
-            return converter.convert(attr);
+            return Long.parseLong(supplyAsString(name));
         } catch (NumberFormatException ex) {
             throw new PathVariableProcessingException(ex.getMessage());
         }

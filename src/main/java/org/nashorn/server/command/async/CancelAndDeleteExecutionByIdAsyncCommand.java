@@ -13,6 +13,7 @@ import org.nashorn.server.db.InMemoryStorage;
 import javax.servlet.ServletException;
 
 public class CancelAndDeleteExecutionByIdAsyncCommand extends AbstractCommand {
+
     @Override
     public Object execute(HttpRequestEntity request, HttpResponseEntity response)
             throws CommandExecutionException, ServletException {

@@ -85,6 +85,4 @@ public class ApiGatewayServlet extends HttpServlet {
         }
         LOGGER.info("END SERVICE");
     }
-
 }
-

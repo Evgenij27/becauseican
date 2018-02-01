@@ -1,5 +1,7 @@
 package org.nashorn.server.command;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import org.apache.log4j.Logger;
 import org.nashorn.server.CommandExecutionException;
 import org.nashorn.server.HttpRequestEntity;
@@ -11,7 +13,6 @@ import org.nashorn.server.util.ScriptEntity;
 import javax.script.CompiledScript;
 import javax.script.ScriptException;
 import javax.servlet.ServletException;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -33,10 +34,13 @@ public abstract class AbstractCommand implements Command {
     protected ScriptEntity readScriptEntity(Reader reader) throws CommandExecutionException {
         LOGGER.info("GETTING SCRIPT ENTITY");
         try {
-            return  JsonSerDesEngine.readEntity(reader);
-        } catch (IOException ex) {
+            return JsonSerDesEngine.readEntity(reader);
+        } catch (JsonParseException | JsonMappingException ex) {
             LOGGER.error(ex);
-            throw new CommandExecutionException("Error during parsing JSON.");
+            throw new CommandExecutionException(ex.getMessage());
+        }  catch (IOException ex) {
+            LOGGER.error(ex);
+            throw new CommandExecutionException(ex.getMessage());
         }
     }
 

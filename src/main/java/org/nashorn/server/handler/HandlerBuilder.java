@@ -4,6 +4,7 @@ import org.nashorn.server.command.Command;
 import org.nashorn.server.util.PathTransformer;
 import org.nashorn.server.util.RequestPathTransformer;
 
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 public abstract class HandlerBuilder implements Builder<Handler> {
@@ -12,10 +13,10 @@ public abstract class HandlerBuilder implements Builder<Handler> {
 
     protected String rootPath;
 
-    protected ConcurrentSkipListMap<String, Command> getEndpoints = new ConcurrentSkipListMap<>();
-    protected ConcurrentSkipListMap<String, Command> postEndpoints = new ConcurrentSkipListMap<>();
-    protected ConcurrentSkipListMap<String, Command> putEndpoints = new ConcurrentSkipListMap<>();
-    protected ConcurrentSkipListMap<String, Command> deleteEndpoints = new ConcurrentSkipListMap<>();
+    protected ConcurrentMap<String, Command> getEndpoints = new ConcurrentSkipListMap<>();
+    protected ConcurrentMap<String, Command> postEndpoints = new ConcurrentSkipListMap<>();
+    protected ConcurrentMap<String, Command> putEndpoints = new ConcurrentSkipListMap<>();
+    protected ConcurrentMap<String, Command> deleteEndpoints = new ConcurrentSkipListMap<>();
 
     protected HandlerBuilder(String rootPath) {
         this.rootPath = rootPath;

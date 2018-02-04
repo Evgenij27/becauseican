@@ -43,7 +43,7 @@ public class InMemoryStorageTest {
             }
         });
     }
-    
+
     @Test
     public void testReadSuccessfully() throws UnitNotFoundException {
         ScriptExecutionUnit write = newUnit();

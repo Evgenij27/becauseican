@@ -1,5 +1,6 @@
 package org.nashorn.server.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -20,7 +21,7 @@ public class JsonSerDesEngine {
         return MAPPER.readValue(reader, ScriptEntity.class);
     }
 
-    public static String writeEntity(Object obj) throws IOException {
+    public static String writeEntity(Object obj) throws JsonProcessingException {
         return MAPPER.writeValueAsString(obj);
     }
 }

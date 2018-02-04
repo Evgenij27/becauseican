@@ -1,7 +1,5 @@
 package org.nashorn.server.util;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -18,7 +16,7 @@ public class JsonSerDesEngine {
 
     private JsonSerDesEngine() {}
 
-    public static ScriptEntity readEntity(Reader reader) throws JsonParseException, JsonMappingException, IOException {
+    public static ScriptEntity readEntity(Reader reader) throws IOException {
         return MAPPER.readValue(reader, ScriptEntity.class);
     }
 

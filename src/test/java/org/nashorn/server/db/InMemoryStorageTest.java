@@ -43,13 +43,7 @@ public class InMemoryStorageTest {
             }
         });
     }
-
-    @Ignore
-    @Test
-    public void testCreate() {
-        assertEquals(1L, db.create(newUnit()));
-    }
-
+    
     @Test
     public void testReadSuccessfully() throws UnitNotFoundException {
         ScriptExecutionUnit write = newUnit();

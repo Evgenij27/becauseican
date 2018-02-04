@@ -18,8 +18,6 @@ import java.util.concurrent.ConcurrentMap;
 
 public class GetAllScriptsAsyncCommand extends AbstractCommand {
 
-    private static final Logger LOGGER = Logger.getLogger(GetAllScriptsAsyncCommand.class);
-
     @Override
     public Object execute(HttpRequestEntity request, HttpResponseEntity response)
             throws CommandExecutionException, ServletException {

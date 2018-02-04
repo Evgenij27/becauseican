@@ -12,7 +12,6 @@ import org.nashorn.server.util.response.ScriptResponse;
 import org.nashorn.server.util.response.ResponseMessage;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public class AsyncApiHandler extends AbstractHandler {

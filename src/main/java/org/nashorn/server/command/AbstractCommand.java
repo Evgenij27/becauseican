@@ -53,7 +53,4 @@ public abstract class AbstractCommand implements Command {
             throw new ServletException(ex);
         }
     }
-
-    public abstract Object execute(HttpRequestEntity req, HttpResponseEntity resp)
-            throws CommandExecutionException, ServletException;
 }

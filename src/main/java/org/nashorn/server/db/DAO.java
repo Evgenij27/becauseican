@@ -3,9 +3,8 @@ package org.nashorn.server.db;
 
 import org.nashorn.server.core.ExecutionUnit;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentMap;
 
 public interface DAO {
 
@@ -17,5 +16,5 @@ public interface DAO {
 
     void delete(long id) throws UnitNotFoundException;
 
-    Set<Map.Entry<Long, ExecutionUnit>> getAllUnits();
+    Set<ConcurrentMap.Entry<Long, ExecutionUnit>> getAllUnits();
 }

@@ -1,7 +1,6 @@
 package org.nashorn.server.core;
 
 import javax.script.*;
-import java.io.Reader;
 
 public class NashornScriptCompiler {
 

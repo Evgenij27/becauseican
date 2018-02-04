@@ -49,7 +49,7 @@ public class SubmitNewScriptAsyncCommandTest {
 
         verify(mresp).setStatus(HttpServletResponse.SC_CREATED);
 
-        assertEquals(sr.getStatus(), HttpServletResponse.SC_CREATED);
+        assertEquals(HttpServletResponse.SC_CREATED, sr.getStatus());
         assertNull(sr.getContent());
     }
 }

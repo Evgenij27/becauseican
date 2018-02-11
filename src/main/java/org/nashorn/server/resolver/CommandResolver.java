@@ -7,5 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 public interface CommandResolver {
 
+    void registerEndpoint(String method, String path, Command command);
+
     Command resolve(HttpServletRequest req) throws CommandNotFoundException;
 }

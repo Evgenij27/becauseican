@@ -34,13 +34,13 @@ public class BlockApiHandler extends AbstractHandler {
             } catch (CommandNotFoundException | CommandExecutionException ex) {
                 LOGGER.error(ex);
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                ScriptResponse sr = buildErrorMsg(ex, resp);
-                writeResponse(sr, resp);
+                resp.writeErrorMessage(ex);
             }
         } else if (chain != null) {
             chain.handle(req, resp);
         } else {
-            writeResponse(new ResponseMessage("Bad request."), resp);
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.writeMessage(new ResponseMessage("Bad request. Such type of API is not supported."));
         }
     }
 }

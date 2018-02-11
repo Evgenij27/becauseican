@@ -31,17 +31,17 @@ public class AsyncApiHandler extends AbstractHandler {
             try {
                 Command command = resolverChain.resolve(req);
                 Object msg = command.execute(req, resp);
-                writeResponse(msg, resp);
+                resp.writeMessage(msg);
             } catch (CommandNotFoundException | CommandExecutionException ex) {
                 LOGGER.error(ex.getMessage());
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                ScriptResponse sr = buildErrorMsg(ex, resp);
-                writeResponse(sr, resp);
+                resp.writeErrorMessage(ex);
             }
         } else if (chain != null) {
             chain.handle(req, resp);
         } else {
-            writeResponse(new ResponseMessage("Bad request."), resp);
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.writeMessage(new ResponseMessage("Bad request. Such type of API is not supported."));
         }
     }
 }

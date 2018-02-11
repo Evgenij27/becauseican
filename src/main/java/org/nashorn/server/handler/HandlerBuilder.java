@@ -1,45 +1,40 @@
 package org.nashorn.server.handler;
 
 import org.nashorn.server.command.Command;
+import org.nashorn.server.resolver.CommandResolver;
+import org.nashorn.server.resolver.CommandResolverImpl;
+import org.nashorn.server.resolver.HttpMethod;
 import org.nashorn.server.util.PathTransformer;
 import org.nashorn.server.util.RequestPathTransformer;
 
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ConcurrentSkipListMap;
 
 public abstract class HandlerBuilder implements Builder<Handler> {
-
     private final PathTransformer transformer;
+    protected final String rootPath;
+    protected final CommandResolver resolverChain = new CommandResolverImpl(HttpMethod.GET);
 
-    protected String rootPath;
-
-    protected ConcurrentMap<String, Command> getEndpoints = new ConcurrentSkipListMap<>();
-    protected ConcurrentMap<String, Command> postEndpoints = new ConcurrentSkipListMap<>();
-    protected ConcurrentMap<String, Command> putEndpoints = new ConcurrentSkipListMap<>();
-    protected ConcurrentMap<String, Command> deleteEndpoints = new ConcurrentSkipListMap<>();
-
-    protected HandlerBuilder(String rootPath) {
+    public HandlerBuilder(String rootPath) {
         this.rootPath = rootPath;
         this.transformer = new RequestPathTransformer(rootPath);
     }
 
     public HandlerBuilder getEndpoint(String path, Command command) {
-        getEndpoints.put(transformer.transform(path), command);
+        resolverChain.registerEndpoint(HttpMethod.GET, transformer.transform(path), command);
         return this;
     }
 
     public HandlerBuilder postEndpoint(String path, Command command) {
-        postEndpoints.put(transformer.transform(path), command);
+        resolverChain.registerEndpoint(HttpMethod.POST, transformer.transform(path), command);
         return this;
     }
 
     public HandlerBuilder putEndpoint(String path, Command command) {
-        putEndpoints.put(transformer.transform(path), command);
+        resolverChain.registerEndpoint(HttpMethod.PUT, transformer.transform(path), command);
         return this;
     }
 
     public HandlerBuilder deleteEndpoint(String path, Command command) {
-        deleteEndpoints.put(transformer.transform(path), command);
+        resolverChain.registerEndpoint(HttpMethod.DELETE, transformer.transform(path), command);
         return this;
     }
 }

@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import org.apache.log4j.Logger;
 import org.nashorn.server.CommandExecutionException;
 import org.nashorn.server.HttpRequestEntity;
-import org.nashorn.server.HttpResponseEntity;
 import org.nashorn.server.core.NashornScriptCompiler;
 import org.nashorn.server.util.JsonSerDesEngine;
 import org.nashorn.server.util.ScriptEntity;

@@ -1,6 +1,5 @@
 package org.nashorn.server.command.async;
 
-import org.apache.log4j.Logger;
 import org.nashorn.server.CommandExecutionException;
 import org.nashorn.server.HttpRequestEntity;
 import org.nashorn.server.HttpResponseEntity;

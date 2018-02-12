@@ -1,15 +1,16 @@
 package org.nashorn.server.resolver;
 
 import org.apache.log4j.Logger;
-import org.nashorn.server.command.Command;
 import org.nashorn.server.CommandNotFoundException;
+import org.nashorn.server.command.Command;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListMap;
-import java.util.regex.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CommandResolverImpl implements CommandResolver {
 

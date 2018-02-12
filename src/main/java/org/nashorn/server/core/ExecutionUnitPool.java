@@ -3,7 +3,8 @@ package org.nashorn.server.core;
 import org.apache.log4j.Logger;
 
 import javax.script.CompiledScript;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ExecutionUnitPool {
 

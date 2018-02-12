@@ -2,13 +2,7 @@ package org.nashorn.server.handler;
 
 import org.apache.log4j.Logger;
 import org.nashorn.server.resolver.CommandResolver;
-import org.nashorn.server.util.JsonSerDesEngine;
-import org.nashorn.server.util.response.ScriptResponse;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

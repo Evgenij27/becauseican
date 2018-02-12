@@ -1,9 +1,9 @@
 package org.nashorn.server.util;
 
+import org.apache.log4j.Logger;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.log4j.Logger;
 
 public class RequestPathTransformer implements PathTransformer {
 

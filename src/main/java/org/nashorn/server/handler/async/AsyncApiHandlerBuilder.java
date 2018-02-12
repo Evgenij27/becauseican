@@ -1,7 +1,7 @@
 package org.nashorn.server.handler.async;
 
-import org.nashorn.server.handler.HandlerBuilder;
 import org.nashorn.server.handler.Handler;
+import org.nashorn.server.handler.HandlerBuilder;
 
 public class AsyncApiHandlerBuilder extends HandlerBuilder {
 

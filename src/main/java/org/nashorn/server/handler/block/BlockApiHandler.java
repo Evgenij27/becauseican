@@ -1,14 +1,13 @@
 package org.nashorn.server.handler.block;
 
+import org.nashorn.server.CommandExecutionException;
+import org.nashorn.server.CommandNotFoundException;
 import org.nashorn.server.HttpRequestEntity;
 import org.nashorn.server.HttpResponseEntity;
 import org.nashorn.server.command.Command;
-import org.nashorn.server.CommandExecutionException;
-import org.nashorn.server.CommandNotFoundException;
 import org.nashorn.server.handler.AbstractHandler;
 import org.nashorn.server.handler.HandlerBuilder;
 import org.nashorn.server.handler.HandlerChain;
-import org.nashorn.server.util.response.ScriptResponse;
 import org.nashorn.server.util.response.ResponseMessage;
 
 import javax.servlet.ServletException;

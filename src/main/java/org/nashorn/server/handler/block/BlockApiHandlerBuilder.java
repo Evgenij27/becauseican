@@ -1,7 +1,7 @@
 package org.nashorn.server.handler.block;
 
-import org.nashorn.server.handler.HandlerBuilder;
 import org.nashorn.server.handler.Handler;
+import org.nashorn.server.handler.HandlerBuilder;
 
 public class BlockApiHandlerBuilder extends HandlerBuilder {
 

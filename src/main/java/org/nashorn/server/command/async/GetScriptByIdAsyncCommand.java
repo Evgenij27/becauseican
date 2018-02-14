@@ -10,7 +10,6 @@ import org.nashorn.server.db.InMemoryStorage;
 import org.nashorn.server.db.UnitNotFoundException;
 import org.nashorn.server.util.PathVariableProcessingException;
 import org.nashorn.server.util.response.ScriptExecutionUnitData;
-import org.nashorn.server.util.response.UriBuilder;
 
 import javax.servlet.ServletException;
 
@@ -38,12 +37,11 @@ public class GetScriptByIdAsyncCommand extends AbstractCommand {
             throw new CommandExecutionException(ex.getMessage());
         }
 
-        String location = new UriBuilder(request).append(id).build();
 
         ScriptExecutionUnitData unitData = new ScriptExecutionUnitData();
         unitData.setId(id);
         unitData.setUnit(unit);
-        unitData.setLocation(location);
+        unitData.setLocation(request.getRequestURL().toString());
 
         pub.statusOK().content(unitData).publish();
 

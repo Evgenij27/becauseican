@@ -30,7 +30,7 @@ public class AsyncApiHandler extends AbstractHandler {
                 command.execute(req, pub);
             } catch (CommandNotFoundException | CommandExecutionException ex) {
                 LOGGER.error(ex.getMessage());
-                pub.statusBadRequest().content(ex).publish();
+                pub.statusBadRequest().content(ex.getMessage()).publish();
 
             }
         } else if (chain != null) {

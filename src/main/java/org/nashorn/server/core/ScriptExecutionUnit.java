@@ -1,5 +1,6 @@
 package org.nashorn.server.core;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.apache.log4j.Logger;
 
 import javax.script.CompiledScript;
@@ -11,6 +12,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+
+@JsonSerialize(using = ScriptExecutionUnitSerializer.class)
 public class ScriptExecutionUnit implements ExecutionUnit {
 
     private static final Logger LOGGER = Logger.getLogger(ScriptExecutionUnit.class);
@@ -24,6 +27,8 @@ public class ScriptExecutionUnit implements ExecutionUnit {
 
     private final AtomicBoolean finishedExceptionally = new AtomicBoolean();
 
+    public ScriptExecutionUnit() { }
+
     public ScriptExecutionUnit(CompiledScript script, ExecutorService exec) {
         future = exec.submit(() -> {
             try {
@@ -31,10 +36,8 @@ public class ScriptExecutionUnit implements ExecutionUnit {
                 script.eval(prepareContext());
                 LOGGER.info("END EVAL SCRIPT");
             } catch (ScriptException ex) {
-                synchronized (this) {
-                    throwable = ex;
-                    finishedExceptionally.set(true);
-                }
+                throwable = ex;
+                finishedExceptionally.set(true);
             }
         });
     }

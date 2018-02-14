@@ -1,7 +1,7 @@
 package org.nashorn.server.handler;
 
 import org.nashorn.server.HttpRequestEntity;
-import org.nashorn.server.HttpResponseEntity;
+import org.nashorn.server.HttpResponsePublisher;
 
 import javax.servlet.ServletException;
 
@@ -16,7 +16,7 @@ public class HandlerChainImpl implements HandlerChain {
     }
 
     @Override
-    public void handle(HttpRequestEntity req, HttpResponseEntity resp) throws ServletException {
-        handler.handle(req, resp, chain);
+    public void handle(HttpRequestEntity req, HttpResponsePublisher pub) throws ServletException {
+        handler.handle(req, pub, chain);
     }
 }

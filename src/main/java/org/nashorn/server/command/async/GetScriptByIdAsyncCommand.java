@@ -3,16 +3,14 @@ package org.nashorn.server.command.async;
 import org.apache.log4j.Logger;
 import org.nashorn.server.CommandExecutionException;
 import org.nashorn.server.HttpRequestEntity;
-import org.nashorn.server.HttpResponseEntity;
+import org.nashorn.server.HttpResponsePublisher;
 import org.nashorn.server.command.AbstractCommand;
 import org.nashorn.server.core.ExecutionUnit;
 import org.nashorn.server.db.InMemoryStorage;
 import org.nashorn.server.db.UnitNotFoundException;
 import org.nashorn.server.util.PathVariableProcessingException;
-import org.nashorn.server.util.response.Href;
-import org.nashorn.server.util.response.ScriptContent;
-import org.nashorn.server.util.response.ScriptResponse;
-import org.nashorn.server.util.response.ScriptUnitData;
+import org.nashorn.server.util.response.ScriptExecutionUnitData;
+import org.nashorn.server.util.response.UriBuilder;
 
 import javax.servlet.ServletException;
 
@@ -21,7 +19,7 @@ public class GetScriptByIdAsyncCommand extends AbstractCommand {
     private static final Logger LOGGER = Logger.getLogger(GetScriptByIdAsyncCommand.class);
 
     @Override
-    public Object execute(HttpRequestEntity request, HttpResponseEntity response)
+    public void execute(HttpRequestEntity request, HttpResponsePublisher pub)
             throws CommandExecutionException, ServletException {
 
         long id;
@@ -40,17 +38,14 @@ public class GetScriptByIdAsyncCommand extends AbstractCommand {
             throw new CommandExecutionException(ex.getMessage());
         }
 
-        ScriptResponse.Builder builder = new ScriptResponse.Builder();
+        String location = new UriBuilder(request).append(id).build();
 
-        builder.statusOK();
-        builder.copyHeadersFrom(response);
+        ScriptExecutionUnitData unitData = new ScriptExecutionUnitData();
+        unitData.setId(id);
+        unitData.setUnit(unit);
+        unitData.setLocation(location);
 
-        ScriptContent sc = new ScriptContent();
-        sc.setScript(new ScriptUnitData(unit));
-        sc.setHref(new Href.Builder(new StringBuilder(request.getRequestURL())).build());
+        pub.statusOK().content(unitData).publish();
 
-        builder.addContent(sc);
-
-        return builder.build();
     }
 }

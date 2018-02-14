@@ -3,26 +3,20 @@ package org.nashorn.server.command.block;
 import org.apache.log4j.Logger;
 import org.nashorn.server.CommandExecutionException;
 import org.nashorn.server.HttpRequestEntity;
-import org.nashorn.server.HttpResponseEntity;
+import org.nashorn.server.HttpResponsePublisher;
 import org.nashorn.server.command.AbstractCommand;
 import org.nashorn.server.core.ExecutionUnit;
 import org.nashorn.server.core.ExecutionUnitPool;
-import org.nashorn.server.util.JsonSerDesEngine;
-import org.nashorn.server.util.response.ScriptContent;
-import org.nashorn.server.util.response.ScriptResponse;
-import org.nashorn.server.util.response.ScriptUnitData;
 
 import javax.script.CompiledScript;
 import javax.servlet.ServletException;
-import java.io.IOException;
-import java.io.PrintWriter;
 
 public class SubmitNewScriptBlockCommand extends AbstractCommand {
 
     private static final  Logger LOGGER = Logger.getLogger(SubmitNewScriptBlockCommand.class);
 
     @Override
-    public Object execute(HttpRequestEntity request, HttpResponseEntity response)
+    public void execute(HttpRequestEntity request, HttpResponsePublisher pub)
             throws CommandExecutionException, ServletException {
 
         String script = readScriptEntity(getReader(request)).getScript();
@@ -32,32 +26,18 @@ public class SubmitNewScriptBlockCommand extends AbstractCommand {
 
         ExecutionUnit unit = ExecutionUnitPool.instance().evalAsync(compiledScript);
 
-        ScriptResponse.Builder builder = new ScriptResponse.Builder();
+        pub.statusOK();
 
-        builder.copyHeadersFrom(response);
+        do {
+            sleep(1000);
 
-        try (final PrintWriter writer = response.getWriter()) {
-            do {
-                sleep(1000);
+            pub.content(unit);
+            pub.publish();
 
-                ScriptUnitData sud = new ScriptUnitData(unit);
+            LOGGER.info("Unit is Done? " + unit.isDone());
+        } while ((!unit.isDone()));
+        LOGGER.info("WRITING FINISHED");
 
-                ScriptContent sc = new ScriptContent();
-                sc.setScript(sud);
-
-                builder.addContent(sc);
-
-                String jsonResp = JsonSerDesEngine.writeEntity(builder.build());
-                writer.write(jsonResp);
-                
-                LOGGER.info("Unit is Done? " + unit.isDone());
-            } while ((!unit.isDone()));
-            LOGGER.info("WRITING FINISHED");
-        } catch (IOException ex) {
-            throw new ServletException(ex);
-        }
-
-        return null;
     }
 
     private void sleep(long millis) throws ServletException {
@@ -68,9 +48,4 @@ public class SubmitNewScriptBlockCommand extends AbstractCommand {
             throw new ServletException(e);
         }
     }
-
-    private void checkWriter(PrintWriter writer) throws IOException {
-        if (writer.checkError()) throw new IOException("Client disconnected");
-    }
-
 }

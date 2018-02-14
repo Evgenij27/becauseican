@@ -1,26 +1,9 @@
 package org.nashorn.server.command.async;
 
-import org.junit.Test;
-import org.nashorn.server.CommandExecutionException;
-import org.nashorn.server.HttpRequestEntity;
-import org.nashorn.server.HttpResponseEntity;
-import org.nashorn.server.command.Command;
-import org.nashorn.server.core.ExecutionUnitPool;
-import org.nashorn.server.core.NashornScriptCompiler;
-import org.nashorn.server.core.ScriptExecutionUnit;
-import org.nashorn.server.db.InMemoryStorage;
-import org.nashorn.server.util.PathVariableProcessingException;
-import org.nashorn.server.util.response.ScriptResponse;
-
-import javax.script.CompiledScript;
-import javax.script.ScriptException;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+/*
 
 public class GetScriptByIdAsyncCommandTest {
 
@@ -86,4 +69,4 @@ public class GetScriptByIdAsyncCommandTest {
             fail();
         }
     }
-}
+}*/

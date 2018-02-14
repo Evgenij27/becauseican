@@ -1,4 +1,4 @@
-package org.nashorn.server.handler;
+package org.nashorn.server;
 
 public interface Builder<E> {
 

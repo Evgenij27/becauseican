@@ -1,5 +1,6 @@
 package org.nashorn.server.handler;
 
+import org.nashorn.server.Builder;
 import org.nashorn.server.command.Command;
 import org.nashorn.server.resolver.CommandResolver;
 import org.nashorn.server.resolver.CommandResolverImpl;

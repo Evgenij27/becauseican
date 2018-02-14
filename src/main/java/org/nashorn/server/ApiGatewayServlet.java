@@ -80,8 +80,8 @@ public class ApiGatewayServlet extends HttpServlet {
 
         try {
             HttpRequestEntity reqEntity = new HttpRequestEntity(req);
-            HttpResponseEntity respEntity = new HttpResponseEntity(resp);
-            HANDLER.handle(reqEntity, respEntity, CHAIN);
+            HttpResponsePublisher pub = new HttpResponsePublisher(resp);
+            HANDLER.handle(reqEntity, pub, CHAIN);
         } catch (ServletException ex) {
             LOGGER.error(ex);
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

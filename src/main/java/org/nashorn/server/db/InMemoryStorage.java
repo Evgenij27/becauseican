@@ -1,7 +1,11 @@
 package org.nashorn.server.db;
 
+import org.apache.log4j.Logger;
 import org.nashorn.server.core.ExecutionUnit;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -9,13 +13,26 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class InMemoryStorage implements DAO {
 
-    private static final int CAPACITY_LIMIT = 50;
+    private static final Logger LOGGER = Logger.getLogger(InMemoryStorage.class);
+
+    private static final int DEFAULT_CAPACITY = 50;
 
     private final AtomicLong counter = new AtomicLong();
 
-    private final ConcurrentMap<Long, ExecutionUnit> storage = new ConcurrentHashMap<>(CAPACITY_LIMIT);
+    private final ConcurrentMap<Long, ExecutionUnit> storage;
 
-    private InMemoryStorage() {}
+    private InMemoryStorage() {
+        int capacity = DEFAULT_CAPACITY;
+        try {
+            Context initCtx = new InitialContext();
+            Context envCtx = (Context) initCtx.lookup("java:comp/env");
+            capacity = (Integer) envCtx.lookup("storage::capacity");
+            LOGGER.info("Injected capacity is: " + capacity);
+        } catch (NamingException ex) {
+            LOGGER.error("Property not found. Use default value", ex);
+        }
+        storage = new ConcurrentHashMap<>(capacity);
+    }
 
     public static InMemoryStorage instance() {
         return Holder.INSTANCE;

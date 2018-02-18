@@ -5,7 +5,7 @@ import org.nashorn.server.handler.HandlerBuilder;
 
 public class AsyncApiHandlerBuilder extends HandlerBuilder {
 
-    protected AsyncApiHandlerBuilder(String rootPath) {
+    public AsyncApiHandlerBuilder(String rootPath) {
         super(rootPath);
     }
 

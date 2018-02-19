@@ -3,15 +3,17 @@ package org.nashorn.server.util.response;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.nashorn.server.core.ExecutionUnit;
 
-@JsonInclude(Include.NON_NULL)
+@JsonSerialize(using = ScriptExecutionUnitDataSerializer.class)
 public class ScriptExecutionUnitData {
-    @JsonProperty("id")
+
     private long id;
-    @JsonProperty("href")
+
     private String location;
-    @JsonProperty
+
     private ExecutionUnit unit;
 
     public void setId(long id) {
@@ -24,5 +26,17 @@ public class ScriptExecutionUnitData {
 
     public void setUnit(ExecutionUnit unit) {
         this.unit = unit;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public ExecutionUnit getUnit() {
+        return unit;
     }
 }

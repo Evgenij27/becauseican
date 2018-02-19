@@ -7,11 +7,9 @@ import org.nashorn.server.command.async.GetScriptByIdAsyncCommand;
 import org.nashorn.server.command.async.SubmitNewScriptAsyncCommand;
 import org.nashorn.server.command.block.SubmitNewScriptBlockCommand;
 import org.nashorn.server.handler.Handler;
-import org.nashorn.server.handler.HandlerBuilder;
 import org.nashorn.server.handler.HandlerChain;
 import org.nashorn.server.handler.HandlerChainImpl;
-import org.nashorn.server.handler.async.AsyncApiHandler;
-import org.nashorn.server.handler.block.BlockApiHandler;
+import org.nashorn.server.handler.RequestHandlerBuilder;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -38,7 +36,7 @@ public class ApiGatewayServlet extends HttpServlet {
             Block API Handler and its Commands
          ==========================================================================
          */
-       final HandlerBuilder blockBuilder = BlockApiHandler.newBuilder("/nashorn/api/v0.9/block");
+       final RequestHandlerBuilder blockBuilder = new RequestHandlerBuilder("/nashorn/api/v0.9/block");
          /*
             POST Endpoints
          */
@@ -49,7 +47,7 @@ public class ApiGatewayServlet extends HttpServlet {
             Async API Handler and its Commands
         ============================================================================
          */
-        final HandlerBuilder asyncBuilder = AsyncApiHandler.newBuilder("/nashorn/api/v0.9/async");
+        final RequestHandlerBuilder asyncBuilder = new RequestHandlerBuilder("/nashorn/api/v0.9/async");
         /*
             GET Endpoints
          */

@@ -10,7 +10,6 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
 
 @WebFilter(
         filterName = "ConcurrencyFilter",
@@ -48,25 +47,19 @@ public class ConcurrencyLimitFilter implements Filter {
             throws IOException, ServletException {
 
 
-        try {
-            if (semaphore.tryAcquire(1, 2, TimeUnit.SECONDS)) {
-                try {
-                    LOGGER.info("START FILTERING");
-                    chain.doFilter(request, response);
-                    LOGGER.info("END FILTERING");
-                } finally {
-                    LOGGER.info("RELEASE");
-                    semaphore.release(1);
-                }
-            } else {
-                LOGGER.info("SERVICE UNAVAILABLE");
-                HttpServletResponse httResponse = (HttpServletResponse) response;
-                httResponse.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+        if (semaphore.tryAcquire(1)) {
+            try {
+                LOGGER.info("START FILTERING");
+                chain.doFilter(request, response);
+                LOGGER.info("END FILTERING");
+            } finally {
+                LOGGER.info("RELEASE");
+                semaphore.release(1);
             }
-        } catch (InterruptedException ex) {
-            Thread.currentThread().interrupt();
-            LOGGER.error(ex);
-            throw new ServletException(ex);
+        } else {
+            LOGGER.info("SERVICE UNAVAILABLE");
+            HttpServletResponse httResponse = (HttpServletResponse) response;
+            httResponse.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
         }
     }
 

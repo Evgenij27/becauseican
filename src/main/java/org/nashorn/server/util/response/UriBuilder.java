@@ -1,6 +1,6 @@
 package org.nashorn.server.util.response;
 
-import org.nashorn.server.Builder;
+import org.nashorn.server.handler.Builder;
 
 import javax.servlet.http.HttpServletRequest;
 

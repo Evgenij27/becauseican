@@ -18,6 +18,10 @@ public class ScriptExecutionUnitSerializer extends StdSerializer<ScriptExecution
     public void serialize(ScriptExecutionUnit value, JsonGenerator gen, SerializerProvider provider) throws IOException {
         gen.writeStartObject();
 
+        gen.writeFieldName("script");
+
+        gen.writeStartObject();
+
         if (value.finishedExceptionally()) {
             gen.writeStringField("data", value.getErrorOutput().getBuffer().toString());
             gen.writeBooleanField("hasError", true);
@@ -35,7 +39,7 @@ public class ScriptExecutionUnitSerializer extends StdSerializer<ScriptExecution
             gen.writeBooleanField("hasError", false);
             gen.writeBooleanField("isFinished", value.isDone());
         }
-
+        gen.writeEndObject();
         gen.writeEndObject();
     }
 }

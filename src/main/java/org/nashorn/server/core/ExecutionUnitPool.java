@@ -32,7 +32,7 @@ public class ExecutionUnitPool {
         try {
             Context initCtx = new InitialContext();
             Context envCtx = (Context) initCtx.lookup("java:comp/env");
-            nThreads = (Integer) envCtx.lookup("pool::size");
+            nThreads = (Integer) envCtx.lookup("pool/size");
             LOGGER.info("Injected pool size is: " + nThreads);
         } catch (NamingException ex) {
             LOGGER.error("Property not found. Use default value", ex);

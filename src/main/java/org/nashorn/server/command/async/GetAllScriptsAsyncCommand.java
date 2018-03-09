@@ -24,7 +24,7 @@ public class GetAllScriptsAsyncCommand extends AbstractCommand {
 
         Set<ConcurrentMap.Entry<Long, ExecutionUnit>> entrySet = InMemoryStorage.instance().getAllUnits();
 
-        if (entrySet.size() > 0) {
+        if (!entrySet.isEmpty()) {
             pub.statusOK();
             pub.content(buildListForResponse(entrySet, request));
         } else {
@@ -36,7 +36,7 @@ public class GetAllScriptsAsyncCommand extends AbstractCommand {
     private List<ScriptExecutionUnitData> buildListForResponse(Set<ConcurrentMap.Entry<Long, ExecutionUnit>> entrySet,
                                                                HttpServletRequest req) {
         List<ScriptExecutionUnitData> units = new ArrayList<>();
-        for (ConcurrentMap.Entry<Long, ExecutionUnit> entry : InMemoryStorage.instance().getAllUnits()) {
+        for (ConcurrentMap.Entry<Long, ExecutionUnit> entry : entrySet) {
             ScriptExecutionUnitData unitData = new ScriptExecutionUnitData();
             unitData.setId(entry.getKey());
             unitData.setUnit(entry.getValue());

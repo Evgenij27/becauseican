@@ -12,7 +12,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-
 @JsonSerialize(using = ScriptExecutionUnitSerializer.class)
 public class ScriptExecutionUnit implements ExecutionUnit {
 
@@ -26,8 +25,6 @@ public class ScriptExecutionUnit implements ExecutionUnit {
     private volatile Throwable throwable;
 
     private final AtomicBoolean finishedExceptionally = new AtomicBoolean();
-
-    public ScriptExecutionUnit() { }
 
     public ScriptExecutionUnit(CompiledScript script, ExecutorService exec) {
         future = exec.submit(() -> {

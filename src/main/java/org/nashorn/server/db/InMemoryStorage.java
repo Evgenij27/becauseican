@@ -26,7 +26,7 @@ public class InMemoryStorage implements DAO {
         try {
             Context initCtx = new InitialContext();
             Context envCtx = (Context) initCtx.lookup("java:comp/env");
-            capacity = (Integer) envCtx.lookup("storage::capacity");
+            capacity = (Integer) envCtx.lookup("storage/capacity");
             LOGGER.info("Injected capacity is: " + capacity);
         } catch (NamingException ex) {
             LOGGER.error("Property not found. Use default value", ex);

@@ -29,7 +29,7 @@ public class ConcurrencyLimitFilter implements Filter {
         try {
             Context initCtx = new InitialContext();
             Context envCtx = (Context) initCtx.lookup("java:comp/env");
-            limit = (Integer) envCtx.lookup("limiter::limit");
+            limit = (Integer) envCtx.lookup("limiter/limit");
             LOGGER.info("Injected limit size is: " + limit);
         } catch (NamingException ex) {
             LOGGER.error("Property not found. Use default value", ex);
@@ -39,7 +39,7 @@ public class ConcurrencyLimitFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-
+        LOGGER.info("Filter init");
     }
 
     @Override
@@ -65,6 +65,6 @@ public class ConcurrencyLimitFilter implements Filter {
 
     @Override
     public void destroy() {
-
+        LOGGER.info("Filter destroy");
     }
 }

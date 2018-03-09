@@ -6,13 +6,13 @@ http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
          id="WebApp_ID" version="3.0">
 
     <env-entry>
-        <env-entry-name>pool::size</env-entry-name>
+        <env-entry-name>pool/size</env-entry-name>
         <env-entry-type>java.lang.Integer</env-entry-type>
         <env-entry-value>3</env-entry-value>
     </env-entry>
 
     <env-entry>
-        <env-entry-name>storage::capcity</env-entry-name>
+        <env-entry-name>storage/capacity</env-entry-name>
         <env-entry-type>java.lang.Integer</env-entry-type>
         <env-entry-value>50</env-entry-value>
     </env-entry>

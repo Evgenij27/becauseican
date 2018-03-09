@@ -1,6 +1,5 @@
 package org.nashorn.server.command.async;
 
-import org.apache.log4j.Logger;
 import org.nashorn.server.CommandExecutionException;
 import org.nashorn.server.HttpRequestEntity;
 import org.nashorn.server.HttpResponsePublisher;
@@ -14,8 +13,6 @@ import javax.script.CompiledScript;
 import javax.servlet.ServletException;
 
 public class SubmitNewScriptAsyncCommand extends AbstractCommand {
-
-    private static final Logger LOGGER = Logger.getLogger(SubmitNewScriptAsyncCommand.class);
 
     @Override
     public void execute(HttpRequestEntity request, HttpResponsePublisher pub)

@@ -32,15 +32,13 @@ public class ContextListener implements ServletContextListener {
 
         registerServlet(context);
 
-
-
     }
 
     private Handler buildBlockHandler() {
         RequestHandlerBuilder blockBuilder = new RequestHandlerBuilder("/nashorn/api/v0.9/block");
 
         /* POST Endpoints */
-        blockBuilder.postEndpoint("/script", new SubmitNewScriptBlockCommand());
+        blockBuilder.postEndpoint(ApiEndpoints.SCRIPT, new SubmitNewScriptBlockCommand());
 
         return blockBuilder.build();
     }
@@ -49,14 +47,14 @@ public class ContextListener implements ServletContextListener {
         RequestHandlerBuilder asyncBuilder = new RequestHandlerBuilder("/nashorn/api/v0.9/async");
 
         /* GET Endpoints */
-        asyncBuilder.getEndpoint("/script/:id",      new GetScriptByIdAsyncCommand());
-        asyncBuilder.getEndpoint("/script",          new GetAllScriptsAsyncCommand());
+        asyncBuilder.getEndpoint(ApiEndpoints.SCRIPT_BY_ID,      new GetScriptByIdAsyncCommand());
+        asyncBuilder.getEndpoint(ApiEndpoints.SCRIPT,          new GetAllScriptsAsyncCommand());
 
         /* POST Endpoints */
-        asyncBuilder.postEndpoint("/script",         new SubmitNewScriptAsyncCommand());
+        asyncBuilder.postEndpoint(ApiEndpoints.SCRIPT,         new SubmitNewScriptAsyncCommand());
 
         /* DELETE Endpoints */
-        asyncBuilder.deleteEndpoint("/script/:id",     new CancelAndDeleteExecutionByIdAsyncCommand());
+        asyncBuilder.deleteEndpoint(ApiEndpoints.SCRIPT_BY_ID,     new CancelAndDeleteExecutionByIdAsyncCommand());
 
         return asyncBuilder.build();
     }

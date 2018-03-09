@@ -1,7 +1,5 @@
 package org.nashorn.server.db;
 
-import org.junit.*;
-
 import org.nashorn.server.core.ExecutionUnit;
 import org.nashorn.server.core.ExecutionUnitPool;
 import org.nashorn.server.core.NashornScriptCompiler;
@@ -9,7 +7,6 @@ import org.nashorn.server.core.ScriptExecutionUnit;
 
 import javax.script.CompiledScript;
 import javax.script.ScriptException;
-
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 

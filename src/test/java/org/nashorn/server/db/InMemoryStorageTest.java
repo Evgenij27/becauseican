@@ -1,5 +1,7 @@
 package org.nashorn.server.db;
 
+import org.junit.After;
+import org.junit.Test;
 import org.nashorn.server.core.ExecutionUnit;
 import org.nashorn.server.core.ExecutionUnitPool;
 import org.nashorn.server.core.NashornScriptCompiler;
